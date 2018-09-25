@@ -1,0 +1,37 @@
+---
+title: "First ARTMO LUT Inversion Simulations"
+author: Mattia Rossi
+output: html_document
+---
+
+This markdown is used for documenting the ARTMO simulations for LAI retrieval during my period at the IPL, LEO in 2018.
+I separated the codes by simulation and added the code necessary to plot the results and to document strength and weaknesses of the simulation approach.
+Each iteration will be calculated in the [R directory](https://github.com/mattia6690/ARTMO_R/tree/master/R) of this repository. The visualization and discussion of the results will be done within the [Documentation directory](https://github.com/mattia6690/ARTMO_R/tree/master/R) sparsed across diverse RMarkdowns
+
+## Setup of Environment
+```{r}
+
+```
+
+
+ARTMOdir<-"K:/SentinelVegetationProducts/S2_LAI"
+ARTMOdir.ss<-paste0(ARTMOdir,"/Subsets")
+ARTMOdir.in<-paste0(ARTMOdir,"/ARTMO_Inversion")
+
+
+## First simulation
+
+The first model I tried has the following specs:
+* PROSAIL LUT inversion
+* N 0-3 by 1 
+* Chl 0-100 by 10
+* LAI 0-8 by 0.1
+* Angle 20-90 by 25
+* 30000 Simulations
+* 10 S-2 bands. All bands resampled to 10 m and the 60m band is excluded
+* 
+* Exponential COST Function with 1 sample: RMSE: 1.1 and R^[2] of around 0-8. The second best COST function is by the RMSE function:
+
+```{r setup, include=FALSE}
+directory<- "2509_Prosail_Inversion_30000_10Bands_v1"
+```
