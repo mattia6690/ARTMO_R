@@ -1,0 +1,25 @@
+---
+title: "ARTMO Suggestions"
+author: Mattia Rossi
+output: html_document
+---
+
+This script is for highlighting possible **Errors** or suggestions (Plain Text) I noticed during my work with the ARTMO Software. 
+Issues or suggestions that have been either applied or rejected are ~~stroken through~~
+
+### General
+
+### Modules
+
++ Sensors Module. Maybe Include the spatial Resolution in the Sensor description? Especially useful for Sentinel-2
+
+### Modeling
+
+### Retrieval (LUT Inversion)
+
+### Retrieval (Machine Learning)
+
+### Possibilities of R
+
++ It could be useful to establish a local workplace the persons are working in (Input, Output, Metadata etc). This is useful when other Programming Languages are used
++ Standardized Workflow afterwards?
