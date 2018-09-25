@@ -16,7 +16,7 @@ gpdata.file<-paste0(ARTMOdir,"/Validation_Tables/Metrics_S2_ByBand_LAI_190918.rd
 gpsdata<- gpdata.file %>% 
   readRDS %>% 
   st_as_sf %>% 
-  select(Station,Date,OP1,meanLAI)
+  dplyr::select(Station,Date,OP1,meanLAI)
 
 files.out<-list.files(indir,full.names = T) %>% 
   as.tibble %>% 
@@ -28,7 +28,8 @@ files.out<-list.files(indir,full.names = T) %>%
   mutate(Date=as_date(map_chr(Statdat, function(x) x[2]))) %>% 
   mutate(Poly=map2(Station,Date,function(x,y,gps=gpsdata) filter(gps,Station==x & Date==y)))
 
-files<-files.out %>% select(Station,Date,Raster,Poly) %>% 
+files<-files.out %>% 
+  dplyr::select(Station,Date,Raster,Poly) %>% 
   filter(Date!="2017-05-10")
 
 files.extract<-files %>% 
@@ -36,13 +37,13 @@ files.extract<-files %>%
   mutate(Measured=map(Poly,function(x) x$meanLAI))
 
 files.unnest <- files.extract %>% dplyr::select(Station,Date,Simulated,Measured) %>% unnest
-l1<-lm(files.unnest$Simulated~files.unnest$Measured)
 
 eq1<-files.unnest %>% 
   group_by(Station) %>% nest %>% 
-  mutate(Eq=map_chr(data,function(x) r2.equation(lm(x$Simulated~x$Measured))))
+  mutate(Lm=map(data,function(l) lm(l$Simulated~l$Measured))) %>% 
+  mutate(Eq=map_chr(Lm,r2.equation))
 
-g1<-ggplot(files.unnest,aes(Simulated,Measured,color=as.character(Date)))+
+g1<-ggplot(files.unnest,aes(Simulated,Measured,color=as.character(Date)))+ theme_bw()+
   geom_point()+
   geom_smooth(method="lm",se=F,col="brown")+
   geom_abline(intercept=0,slope=1,linetype="dotted")+
@@ -52,10 +53,8 @@ g1<-ggplot(files.unnest,aes(Simulated,Measured,color=as.character(Date)))+
   ylim(c(0,10))+
   xlim(c(0,10))
 
-g1<-g1+geom_text(data=eq1,aes(x=3,y=10,label=Eq,family="serif"),color="black",parse=T)+
-  
+g1<-g1+geom_text(data=eq1,aes(x=3,y=10,label=Eq,family="serif"),color="black",parse=T)
 ggsave(g1,file=paste0(ARTMOdir,"/R_Graphs/",iteration,".png"),device = "png",width=10,height=7)
-
 
 # Plot and Click ----------------------------------------------------------
 
