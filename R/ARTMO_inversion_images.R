@@ -1,8 +1,6 @@
 
 # Initialize --------------------------------------------------------------
 source("R/Essentials.R")
-library("tools")
-library(sf)
 
 # Read Data ---------------------------------------------------------------
 ARTMOdir<-"K:/SentinelVegetationProducts/S2_LAI"
@@ -38,17 +36,21 @@ files.extract<-files %>%
 
 files.unnest <- files.extract %>% dplyr::select(Station,Date,Simulated,Measured) %>% unnest
 
+saveRDS(files.unnest,file = paste0(ARTMOdir.in,"/",iteration,".rds"))
+
+
 eq1<-files.unnest %>% 
   group_by(Station) %>% nest %>% 
   mutate(Lm=map(data,function(l) lm(l$Simulated~l$Measured))) %>% 
-  mutate(Eq=map_chr(Lm,r2.equation))
+  mutate(Eq=map_chr(Lm,r2.equation)) %>% 
+  dplyr::select(Station,Eq)
 
 g1<-ggplot(files.unnest,aes(Simulated,Measured,color=as.character(Date)))+ theme_bw()+
   geom_point()+
   geom_smooth(method="lm",se=F,col="brown")+
   geom_abline(intercept=0,slope=1,linetype="dotted")+
   scale_color_discrete(name = "Date")+
-  facet_grid(.~Station)+
+  facet_wrap(.~Station,ncol=2)+
   xlab("Simulated LAI")+ylab("Measured LAI")+
   ylim(c(0,10))+
   xlim(c(0,10))
