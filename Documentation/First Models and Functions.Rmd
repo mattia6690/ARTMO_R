@@ -3,8 +3,6 @@ title: "First ARTMO LUT Inversion Simulations"
 author: "Mattia Rossi"
 output:
   html_document: default
-  pdf_document: default
-  word_document: default
 ---
 
 This markdown is used for documenting the ARTMO simulations for LAI retrieval during my period at the IPL, LEO in 2018.
