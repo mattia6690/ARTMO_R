@@ -70,4 +70,14 @@ plot(st_geometry(poly),add=T)
 
 
 
+env.setup<-function(dir){
+  
+  dircheckup(paste0(dir,"/ARTMO_Inversion"))
+  dircheckup(paste0(dir,"/ValidationTables"))
+  dircheckup(paste0(dir,"/Subsets"))
+  dircheckup(paste0(dir,"/Other"))
+  
+}
+
+brick("K:/SentinelVegetationProducts/S2_20m_Export_NoSNAP/T32TPS/S2B_MSI_L2A_20m_20171205_N02.06_s2cV2.4_T32TPS_20171205T121008_AuxBands.tif")
 
