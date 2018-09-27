@@ -11,7 +11,10 @@ Issues or suggestions that have been either applied or rejected are ~~stroken th
 
 ### Modules
 
-+ Sensors Module. Maybe Include the spatial Resolution in the Sensor description? Especially useful for Sentinel-2
++ Sensor Module. Maybe Include the spatial Resolution in the Sensor description? Especially useful for Sentinel-2
++ Sensor Module. Help -> Spelling Error "Installation"
++ Sensor Module Export of band settings -> Easy import in R
+
 
 ### Modeling
 
