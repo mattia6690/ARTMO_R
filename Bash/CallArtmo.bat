@@ -1,0 +1,1 @@
+matlab.exe -nodisplay -r \"run('C:/ARTMO/artmo.p')\"
