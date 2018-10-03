@@ -9,6 +9,7 @@ loadandinstall("tools")
 loadandinstall("tidyverse")
 loadandinstall("lubridate")
 loadandinstall("magrittr")
+loadandinstall("R.matlab")
 
 
 # Functions ---------------------------------------------------------------
