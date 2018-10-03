@@ -1,7 +1,10 @@
 ---
 title: "ARTMO Suggestions"
-author: Mattia Rossi
-output: html_document
+author: "Mattia Rossi"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
 ---
 
 This script is for highlighting possible **Errors** or suggestions (Plain Text) I noticed during my work with the ARTMO Software. 
@@ -13,16 +16,26 @@ Issues or suggestions that have been either applied or rejected are ~~stroken th
 
 + Sensor Module. Maybe Include the spatial Resolution in the Sensor description? Especially useful for Sentinel-2
 + Sensor Module. Help -> Spelling Error "Installation"
-+ Sensor Module Export of band settings -> Easy import in R
-
++ ~~Sensor Module Export of band settings (as csv?) -> Easy setting import~~
 
 ### Modeling
 
++ Export Model Parameters to .txt file possible? With the annotation of the Project name or the name of the Iteration. Important Information:
+  + Project Name and name of the database
+  + Forward Modelling process. Which models are implemented (e.g. Prospect4+SAIL)
+  + Parametrization of the Models
+
 ### Retrieval (LUT Inversion)
+
++ CF Table. Export of the Measured/Estimated COST Function LAI -> Plotting in R
++ Retrieval. Export of the Inputs (Images selected + COST Function applied)
 
 ### Retrieval (Machine Learning)
 
 ### Possibilities of R
 
 + It could be useful to establish a local workplace the persons are working in (Input, Output, Metadata etc). This is useful when other Programming Languages are used
-+ Standardized Workflow afterwards?
++ Standardized Workflow afterwards seems to be more important the more I use ARTMO
++ Use of Markdown for Documenting specific usecases or a single explainatory Workflow -> ARTMO Website
+  + Instruction on how to use
+  + Instruction on what modules there are and how they interact with each other.
