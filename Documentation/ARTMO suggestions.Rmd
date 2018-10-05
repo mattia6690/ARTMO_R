@@ -12,10 +12,14 @@ Issues or suggestions that have been either applied or rejected are ~~stroken th
 
 ### General
 
++ **New DB** Error when generating new Database -> Field not filled
++ Probability Density for Prosail Model includes: ![Error](K:\SentinelVegetationProducts\S2_LAI\Errors\Probability Density Function.png)
+
+
 ### Modules
 
 + Sensor Module. Maybe Include the spatial Resolution in the Sensor description? Especially useful for Sentinel-2
-+ Sensor Module. Help -> Spelling Error "Installation"
++ **Sensor Module**. Help -> Spelling Error "Installation"
 + ~~Sensor Module Export of band settings (as csv?) -> Easy setting import~~
 
 ### Modeling
@@ -24,11 +28,13 @@ Issues or suggestions that have been either applied or rejected are ~~stroken th
   + Project Name and name of the database
   + Forward Modelling process. Which models are implemented (e.g. Prospect4+SAIL)
   + Parametrization of the Models
++ Can't cancel the Forwarding process one started
 
 ### Retrieval (LUT Inversion)
 
 + CF Table. Export of the Measured/Estimated COST Function LAI -> Plotting in R
 + Retrieval. Export of the Inputs (Images selected + COST Function applied)
++ Validation. Warning message "Warning: The input to STR2FUNC "0510_v1" is not a valid function name. This will generate an error in a future release. "
 
 ### Retrieval (Machine Learning)
 
