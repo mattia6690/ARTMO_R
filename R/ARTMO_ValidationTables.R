@@ -5,13 +5,13 @@ source("R/Essentials.R")
 
 # Input -------------------------------------------------------------------
 outdir <- "K:/SentinelVegetationProducts/S2_LAI"
-suffix <- "270918"
+suffix <- "280918"
 
 wave  <-read.csv(paste0(outdir,"/Other/Sentinel2_bands.csv"))
 wave.c<- wave %>% filter(Resolution!=60) %>% dplyr::select(Central) %>% unlist(use.names = F)
 
 import<-readRDS(paste0(outdir,"/R_Objects/ExtractionList_",suffix,".rds"))
-input.cols<-c("LAI","MTA","Sunangle")
+input.cols<-c("LAI","MTA","Sunzenith")
 spectral.col<-"S.Band_"
 
 wave.artmo<-c(rep(0,times=length(input.cols)),wave.c)
