@@ -10,7 +10,7 @@ In future we would like to stabilize the functions and add extra ones for additi
 
 ### Contact
 
-If you are interested in my work, face similar problems or projects, or feel interested to contact me regarding any of my work feel free to write here on github or via [Mail](mattia.rossi@eurac.edu)
+If you are interested in my work, face similar problems or projects, or feel interested to contact me regarding any of my work feel free to contact me either here or via Mail
 
 ### Dependencies
 
