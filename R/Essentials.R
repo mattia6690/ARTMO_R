@@ -10,6 +10,7 @@ loadandinstall("tidyverse")
 loadandinstall("lubridate")
 loadandinstall("magrittr")
 loadandinstall("R.matlab")
+loadandinstall("RMariaDB")
 
 
 # Functions ---------------------------------------------------------------
@@ -25,4 +26,23 @@ r2.equation = function(x) {
 }
 
 
-
+# Get the Sensor Information from ARTMO Master File
+artmo.getSensor<-function(x){
+  
+  ti<-x$TIME_MODEL
+  if(is.na(ti)){
+    
+    wavel.raw  <- x$BANDAS %>% 
+      str_replace(.,"\\[","") %>% 
+      str_replace(.,"\\]","") %>% 
+      str_split(.,";") %>% unlist
+    wavel <-as.numeric(wavel.raw) %>% as.tibble %>% setNames(x$NAMESENSOR)
+    
+  } else {
+    
+    wavel.raw <- x$BANDAS %>% str_split(.,",") %>% unlist
+    wavel <-as.numeric(wavel.raw) %>% as.tibble %>% setNames(x$NAMESENSOR)
+  }
+  
+  return(wavel)
+}
