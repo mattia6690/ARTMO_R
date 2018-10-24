@@ -1,5 +1,19 @@
 # ShinyFuns
+library("devtools")
+install_github("mattia6690/Mfunctions");library(Mfunctions)
+loadandinstall("raster")
+loadandinstall("sf")
+loadandinstall("tools")
+loadandinstall("tidyverse")
+loadandinstall("lubridate")
+loadandinstall("magrittr")
+loadandinstall("R.matlab")
+loadandinstall("RMariaDB")
 
+
+loadandinstall("shiny")
+loadandinstall("shinydashboard")
+loadandinstall("shinyFiles")
 
 # Connect to MySQL --------------------------
 artmo_con<-function(database=NULL,user,password,host){
@@ -17,8 +31,30 @@ artmo_con<-function(database=NULL,user,password,host){
   
 }
 
+
+# Get the Sensor Information from ARTMO Master File
+artmo.getSensor<-function(x){
+  
+  ti<-x$TIME_MODEL
+  if(is.na(ti)){
+    
+    wavel.raw  <- x$BANDAS %>% 
+      str_replace(.,"\\[","") %>% 
+      str_replace(.,"\\]","") %>% 
+      str_split(.,";") %>% unlist
+    wavel <-as.numeric(wavel.raw) %>% as.tibble %>% setNames(x$NAMESENSOR)
+    
+  } else {
+    
+    wavel.raw <- x$BANDAS %>% str_split(.,",") %>% unlist
+    wavel <-as.numeric(wavel.raw) %>% as.tibble %>% setNames(x$NAMESENSOR)
+  }
+  
+  return(wavel)
+}
+
 # Check whether a MySQL Table is in ARTMO format
-artmotab.checker<-function(con){
+artmotab.checker<-function(con,user,pw,host){
   
   databs<-dbGetQuery(con,"show databases") %>% unlist
   
@@ -63,7 +99,7 @@ artmo_set_projects <- function(con,dir){
   master<-readRDS(paste0(dir.database,"Master.rds")) %>% as.tibble
   master.n<-master %>% group_by(ID_MASTER) %>% nest
   
-  # Extract the Sensor Informatuion by MasterID
+  # Extract the Sensor Information by MasterID
   master2<-master.n %>% 
     mutate(Sensor=map(data,function(dat){
       
@@ -81,7 +117,8 @@ artmo_set_projects <- function(con,dir){
   master3<- master2 %>% 
     mutate(Model=map2(ID_MASTER,data,function(id,dat2){
       
-      metric.n  <- paste0(dir,dat2$NAME_MODEL,"_Metrics.rds")
+      dir1 <-paste0(dir.database,dat2$NAME_PROYECT,"/",dat2$ID_PY,"_",dat2$ID_SIMULATION,"/")
+      metric.n  <- paste0(dir1,dat2$NAME_MODEL,"_Metrics.rds")
       options(warn=-1)
       if(!file.exists(metric.n)){
         
