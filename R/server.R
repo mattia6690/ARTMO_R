@@ -49,7 +49,7 @@ server <- function(input, output, session) {
   
   output$MySQL.databases<-renderUI({
     
-    gq<-artmotab.checker(con())
+    gq<-artmotab.checker(con(),input$sql.user,input$sql.pw,input$sql.host)
     selectInput("sql.db","Select the ARTMO Database",choices=gq)
     
   })
