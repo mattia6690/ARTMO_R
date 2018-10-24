@@ -1,5 +1,7 @@
 server <- function(input, output, session) {
   
+  
+  # MySQL Functions ---------------------------
   output$MySQL.cred.def<- renderUI({
     
     checkboxInput("sql.def",label="Default MySQL Credentials")
@@ -43,12 +45,12 @@ server <- function(input, output, session) {
                            password=input$sql.pw,
                            host=input$sql.host)
     
-    })
+  })
   
   output$MySQL.databases<-renderUI({
     
-    gq<-dbGetQuery(con(),"show databases") 
-    selectInput("sql.db","SQL Databases",choices=gq)
+    gq<-artmotab.checker(con())
+    selectInput("sql.db","Select the ARTMO Database",choices=gq)
     
   })
   
@@ -74,6 +76,29 @@ server <- function(input, output, session) {
     
     master<-artmo_getmaster(database()) %>% 
       select(ID_MASTER,ID_PY,MODELS=NAME_MODEL,PROJECT=NAME_PROYECT,DATE1,TIME_MODEL,NAMESENSOR,SIM=SIMULACIONES)
+    
+  })
+  
+  # Local Functions ---------------------------
+  output$local.build.bt<-renderUI({
+    
+    actionButton("local.build","Construct Folder Infrastucture")
+    
+  })
+
+  output$local.path<-renderUI({
+    
+    textInput(inputId="local.path",label="Digit Path",value="C:/ARTMO/")
+    
+  })
+  
+  observeEvent(input$local.build,{
+    
+    db<-database()
+    withProgress(message="Constructing Local Environment",value=0,{
+      artmo_set_directory(db,input$local.path)
+      artmo_set_projects(db,input$local.path)
+    })
     
   })
   
