@@ -75,7 +75,13 @@ server <- function(input, output, session) {
   output$MySQL.master<- renderDataTable({
     
     master<-artmo_getmaster(database()) %>% 
-      select(ID_MASTER,ID_PY,MODELS=NAME_MODEL,PROJECT=NAME_PROYECT,DATE1,TIME_MODEL,NAMESENSOR,SIM=SIMULACIONES)
+      select(ID_MASTER,ID_PY,ID_SIMULATION,
+             MODELS=NAME_MODEL,
+             PROJECT=NAME_PROYECT,
+             DATE1,
+             TIME_MODEL,
+             NAMESENSOR,
+             SIM=SIMULACIONES)
     
   })
   
