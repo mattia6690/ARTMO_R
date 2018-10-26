@@ -1,8 +1,9 @@
 
+# Loadandinstall
+loadandinstall <- function(mypkg) {if (!is.element(mypkg, installed.packages()[,1]))
+{install.packages(mypkg)}; library(mypkg, character.only=TRUE) }
 
 # Required Packages -------------------------------------------------------
-library("devtools")
-install_github("mattia6690/Mfunctions");library(Mfunctions)
 loadandinstall("raster")
 loadandinstall("sf")
 loadandinstall("tools")
@@ -11,7 +12,6 @@ loadandinstall("lubridate")
 loadandinstall("magrittr")
 loadandinstall("R.matlab")
 loadandinstall("RMariaDB")
-
 
 # General Functions ---------------------------------------------------------------
 

@@ -41,25 +41,20 @@ server <- function(input, output, session) {
   
   con <- eventReactive(input$sql.con,{
     
-    connect.raw<-artmo_con(user=input$sql.user,
-                           password=input$sql.pw,
-                           host=input$sql.host)
+    connect.raw(user=input$sql.user,password=input$sql.pw,host=input$sql.host)
     
   })
   
   output$MySQL.databases<-renderUI({
     
-    gq<-artmotab.checker(con(),input$sql.user,input$sql.pw,input$sql.host)
+    gq<-is.artmodb(con(),input$sql.user,input$sql.pw,input$sql.host)
     selectInput("sql.db","Select the ARTMO Database",choices=gq)
     
   })
   
   database <- eventReactive(input$sql.db,{
     
-    connect.raw<-artmo_con(user=input$sql.user,
-                           password=input$sql.pw,
-                           database=input$sql.db,
-                           host=input$sql.host)
+    connect.db(user=input$sql.user,password=input$sql.pw, database=input$sql.db,host=input$sql.host)
     
   })
   
@@ -74,7 +69,7 @@ server <- function(input, output, session) {
   
   output$MySQL.master<- renderDataTable({
     
-    master<-artmo_getmaster(database()) %>% 
+    master<-get.master.artmo(database()) %>% 
       select(ID_MASTER,ID_PY,ID_SIMULATION,
              MODELS=NAME_MODEL,
              PROJECT=NAME_PROYECT,
@@ -102,8 +97,8 @@ server <- function(input, output, session) {
     
     db<-database()
     withProgress(message="Constructing Local Environment",value=0,{
-      artmo_set_directory(db,input$local.path)
-      artmo_set_projects(db,input$local.path)
+      set.directory.artmo(db,input$local.path)
+      set.projects.artmo(db,input$local.path)
     })
     
   })
@@ -123,14 +118,6 @@ server <- function(input, output, session) {
     selectInput("mysim","Select the Simulation",choices=ch)
     
   })
-  
-  get.simtable<-function(path){
-    
-    path %>% 
-      list.files(.,pattern = "_Model_Metrics",full.names = T) %>% 
-      map(.,readRDS) %>% 
-      do.call(rbind,.)
-  }
   
   output$mysimulation.table<-renderDataTable({
     
