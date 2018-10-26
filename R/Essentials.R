@@ -13,7 +13,7 @@ loadandinstall("R.matlab")
 loadandinstall("RMariaDB")
 
 
-# Functions ---------------------------------------------------------------
+# General Functions ---------------------------------------------------------------
 
 # Transforms an lm function output to text usable for ggplots
 # Greetings to Jodie Burchell (http://t-redactyl.io/)
@@ -23,26 +23,4 @@ r2.equation = function(x) {
                   r2 = round(summary(x)$r.squared, digits = 2));
   lm_eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(R)^2~"="~r2,lm_coef)
   as.character(as.expression(lm_eq))
-}
-
-
-# Get the Sensor Information from ARTMO Master File
-artmo.getSensor<-function(x){
-  
-  ti<-x$TIME_MODEL
-  if(is.na(ti)){
-    
-    wavel.raw  <- x$BANDAS %>% 
-      str_replace(.,"\\[","") %>% 
-      str_replace(.,"\\]","") %>% 
-      str_split(.,";") %>% unlist
-    wavel <-as.numeric(wavel.raw) %>% as.tibble %>% setNames(x$NAMESENSOR)
-    
-  } else {
-    
-    wavel.raw <- x$BANDAS %>% str_split(.,",") %>% unlist
-    wavel <-as.numeric(wavel.raw) %>% as.tibble %>% setNames(x$NAMESENSOR)
-  }
-  
-  return(wavel)
 }
