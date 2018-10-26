@@ -108,4 +108,37 @@ server <- function(input, output, session) {
     
   })
   
+  # Project Functions ---------------------------
+  
+  output$myproject<-renderUI({
+    
+    ch<-list.dirs(paste0(input$local.path,"/",input$sql.db,"/"),full.names = F,recursive = F)
+    selectInput("myproj","Select the Project",choices=ch)
+    
+  })
+  
+  output$mysimulation<-renderUI({
+    
+    ch<-list.dirs(paste0(input$local.path,"/",input$sql.db,"/",input$myproj,"/"),full.names = F,recursive = F)
+    selectInput("mysim","Select the Simulation",choices=ch)
+    
+  })
+  
+  get.simtable<-function(path){
+    
+    path %>% 
+      list.files(.,pattern = "_Model_Metrics",full.names = T) %>% 
+      map(.,readRDS) %>% 
+      do.call(rbind,.)
+  }
+  
+  output$mysimulation.table<-renderDataTable({
+    
+    path<-paste0(input$local.path,"/",input$sql.db,"/",input$myproj,"/",input$mysim,"/")
+    get.simtable(path)
+    
+  })
+  
 }
+
+

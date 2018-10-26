@@ -1,6 +1,3 @@
-# Construct a Shiny Dashboard for the ARTMo Output
-# Try it
-
 
 ui <- dashboardPage(
   
@@ -11,8 +8,8 @@ ui <- dashboardPage(
   dashboardSidebar(
     disable=F,
     sidebarMenu(
-      menuItem( "Connection" ,tabName="Connect",icon=icon("dashboard")),
-      menuItem( "Environment",tabName="Envi",icon=icon("th"))
+      menuItem( "Connection" ,tabName="Connect",icon=icon("plug")),
+      menuItem( "Explore",tabName="Projects",icon=icon("eye"))
     )
     
   ),
@@ -21,7 +18,7 @@ ui <- dashboardPage(
     
     tabItems(
       
-      # MySQL Input -------------------------------
+      # Connection -------------------------------
       tabItem(tabName = "Connect",
               
               fluidRow(
@@ -38,6 +35,7 @@ ui <- dashboardPage(
                     uiOutput("MySQL.databases")
                     
                 ),
+                
                 box(title="Available MySQL Tables", width = 8,heigth="400",collapsible = T,
                     
                     tableOutput("MySQL.str"),
@@ -47,22 +45,35 @@ ui <- dashboardPage(
               ),
               fluidRow(
                 
-                box(title="Master File: List of Projects, Models and Simulations",width=12,collapsible = T,
+                box(title="Setup the Local Machine",width = 4,collapsible = T, 
+                    
+                    uiOutput("local.path"),
+                    uiOutput("local.build.bt")
+                    
+                ),
+                
+                box(title="MySQL Master File: Overview",width=8,collapsible = T,
                     dataTableOutput("MySQL.master"),
                     style = "height:400px; overflow-y: scroll;overflow-x: scroll;"
                 )
               )
       ),
       
-      # Build Workspace -------------------------------
-      tabItem(tabName = "Envi",
+      # Explore -------------------------------
+      tabItem(tabName = "Projects",
               
               fluidRow(
                 
-                box(title="Setup the Local Environment",
+                box(title="Explore a Project",width = 4,heigth="400",collapsible = T,
                     
-                    uiOutput("local.path"),
-                    uiOutput("local.build.bt")
+                    uiOutput("myproject"),
+                    uiOutput("mysimulation")
+                
+                ),
+                
+                box(title="Simulation Metrics",width = 4,heigth="400",collapsible = T,
+                    
+                    dataTableOutput("mysimulation.table")
                     
                 )
               )
