@@ -7,13 +7,13 @@ output:
 
 This markdown is used for documenting the ARTMO simulations for LAI retrieval during my period at the IPL, LEO in 2018.
 I separated the codes by simulation and added the code necessary to plot the results and to document strength and weaknesses of the simulation approach.
-Each iteration will be calculated in the [R directory](https://github.com/mattia6690/ARTMO_R/tree/master/R) of this repository. The visualization and discussion of the results will be done within the [Documentation directory](https://github.com/mattia6690/ARTMO_R/tree/master/R) sparsed across diverse RMarkdowns
+Each iteration will be calculated in the [R directory](https://github.com/mattia6690/ARTMO_R/tree/master/R) of this repository. The visualization and discussion of the results will be done within the [Documentation directory](https://github.com/mattia6690/ARTMO_R/tree/master/Documentation) sparsed across diverse RMarkdowns
 
 ## Setup of Environment
 
-The working environment is setup on the internal server and addressed as follows
+The working environment can be set up in any directory 
 
-```{r,cache=T,warning=F}
+```{r,cache=T,warning=F,message=F}
 ARTMOdir<-"K:/SentinelVegetationProducts/S2_LAI"
 ARTMOdir.ss<-paste0(ARTMOdir,"/Subsets")
 ARTMOdir.in<-paste0(ARTMOdir,"/ARTMO_Inversion")
@@ -47,7 +47,7 @@ data
 ```
 
 And now the Plots of the Simulated vs the Measured LAI retrieved by this simulation:
-```{r}
+```{r,cache=T}
 eq1<-data %>% 
   group_by(Station) %>% nest %>% 
   mutate(Lm=map(data,function(l) lm(l$Simulated~l$Measured))) %>% 
@@ -66,7 +66,7 @@ g1<-ggplot(data,aes(Simulated,Measured,color=as.character(Date)))+ theme_bw()+
 
 g1<-g1+geom_text(data=eq1,aes(x=3,y=10,label=Eq,family="serif"),color="black",parse=T)
 
-g1
+plot(g1)
 ```
 
 

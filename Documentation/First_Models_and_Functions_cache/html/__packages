@@ -1,9 +1,16 @@
 base
+methods
+datasets
+utils
+grDevices
+graphics
+stats
 devtools
 Mfunctions
 sp
 raster
 sf
+tools
 tidyverse
 ggplot2
 tibble
@@ -14,3 +21,4 @@ dplyr
 stringr
 forcats
 lubridate
+magrittr
