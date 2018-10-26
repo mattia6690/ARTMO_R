@@ -17,6 +17,28 @@ artmo_con<-function(database,user,password,host){
   
 }
 
+# Test is the table retrieved in the matlab file mysql_blob and contains an index, the number of slots and the name 
+
+blob_index<-function(text){
+  
+  i1<-str_split(test,";...")[[1]] %>% 
+    map(.,function(x) str_split(x,"\n")) %>%  
+    unlist
+  
+  i2<- i1[-which(i1=="")] %>% 
+    trimws() %>% 
+    map(.,function(x) str_split(x,"'")) %>% 
+    unlist(recursive=F)
+  
+  id.type<-i2 %>% lapply(.,"[[",2) %>% unlist 
+  ids.raw<-i2 %>% lapply(.,"[[",1) %>% unlist %>% str_split(" ")
+  id1<- ids.raw %>% lapply(.,"[[",1) %>% unlist
+  id2<- ids.raw %>% lapply(.,"[[",2) %>% unlist
+  
+  bind_cols(Index1=as.integer(id1),Index2=as.integer(id2),Type=id.type)
+}
+
+
 
 # Step 1: Set the Directory
 artmo_set_directory <- function(con,dir){
@@ -85,3 +107,7 @@ artmo_set_projects <- function(con,dir){
 
 con<-artmo_con(database,user,pw,host)
 direx<-artmo_set_directory(con,directory)
+
+#write.csv(blob_index(test),paste0(getwd(),"/data/Blob_index_file.csv"))
+
+
