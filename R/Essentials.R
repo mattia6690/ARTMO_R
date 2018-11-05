@@ -4,14 +4,17 @@ loadandinstall <- function(mypkg) {if (!is.element(mypkg, installed.packages()[,
 {install.packages(mypkg)}; library(mypkg, character.only=TRUE) }
 
 # Required Packages -------------------------------------------------------
-loadandinstall("raster")
-loadandinstall("sf")
-loadandinstall("tools")
-loadandinstall("tidyverse")
-loadandinstall("lubridate")
-loadandinstall("magrittr")
-loadandinstall("R.matlab")
-loadandinstall("RMariaDB")
+library("raster")
+library("sf")
+library("tools")
+library("tidyverse")
+library("lubridate")
+library("magrittr")
+library("R.matlab")
+library("RMariaDB")
+library("reshape2")
+
+
 
 # General Functions ---------------------------------------------------------------
 
@@ -24,3 +27,6 @@ r2.equation = function(x) {
   lm_eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(R)^2~"="~r2,lm_coef)
   as.character(as.expression(lm_eq))
 }
+
+
+
