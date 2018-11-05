@@ -4,8 +4,8 @@ source("Essentials.R")
 source("MySQL_Functions.R")
 
 # Load Shiny
-loadandinstall("shiny")
-loadandinstall("shinydashboard")
+library("shiny")
+library("shinydashboard")
 
 # Shiny Functions
 #' Get the Tables of the Models
