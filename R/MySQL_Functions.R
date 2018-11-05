@@ -173,3 +173,19 @@ set.projects.artmo <- function(con,dir){
   }
 }
 
+
+
+# Joiner ------------------------------------
+
+#' Join two MySQL tables based on their IDs. From in small letters and to
+#' in capital letters.
+
+.sqljoin<-function(tableto,tablefrom){
+  
+  colnames(tablefrom)<-toupper(colnames(tablefrom))
+  tojoin<-colnames(tablefrom)[2]
+  ret<-left_join(tableto,tablefrom,by=tojoin)
+  return(ret)
+  
+}
+
