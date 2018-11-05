@@ -1,1 +1,1 @@
-matlab.exe -nodisplay -r \"run('C:/ARTMO/artmo.p')\"
+matlab.exe -nodisplay -r \"run('C:/ARTMO324/artmo.p')\"
