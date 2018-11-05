@@ -3,7 +3,7 @@
 source("R/Essentials.R")
 
 Stab<-dbGetQuery(con,statement=paste("show tables like '%test_%'")) %>% unlist(use.names = F)
-Stab.replace<- map(test.tabs$Table,function(x) str_replace(x,"_inv",""))
+Stab.replace<- map(Stab,function(x) str_replace(x,"_inv",""))
 
 # Create the Real names and Type of Table
 .tableclass<-function(x){
@@ -39,58 +39,55 @@ cost.tabs.to  <- cost.tabs.arr %>% filter(grepl("id_t",IDs)) %>% mutate(ID_to=ID
 cost.tabs     <- left_join(cost.tabs.from,cost.tabs.to) %>% filter(Count>0)
 
 # First Table
-cf1.read<-dbGetQuery(con,statement=paste("select * from",tables.srt$Table[1])) %>% as.tibble
-cf1<-cf1.read %>% 
-  mutate(Info=map(cf1<-general_info,function(x){
-    
-    matall<-readMat(x)$data[,,1]
-    matall.rtm<-matall$rtm[,,1] %>% 
-      melt %>% 
-      select(Type=L1,Value=value)
-    
-  })) %>% select(-general_info)
+cf1.read<-dbGetQuery(con,statement=paste("select * from",cost.tabs$Table[1])) %>% as.tibble
 
-# Second Table
+meta<-map_df(cf1.read$general_info,function(x){
+  
+  matall<-readMat(x)$data[,,1]
+  matall.rtm<-matall$rtm[,,1] %>% 
+    melt %>% 
+    select(Type=L1,Value=value) %>% 
+    filter(Type!="rtm") %>% t %>% as.tibble
+  colnames(matall.rtm)<-matall.rtm[1,]
+  matall.rtm<-matall.rtm %>% dplyr::select(database,project,id,date)
+  matall.rtm<-matall.rtm[-1,]
+  return(matall.rtm)
+  
+})
 
-.sqljoin<-function(tableto,tablefrom){
-  
-  colnames(tablefrom)<-toupper(colnames(tablefrom))
-  tojoin<-colnames(tablefrom)[2]
-  ret<-left_join(tableto,tablefrom,by=tojoin)
-  return(ret)
-  
-}
+cf1<- bind_cols(cf1.read,meta) %>% dplyr::select(-general_info)
+colnames(cf1)<-c("ID_T1","Model","Database","Project","PY_ID","Date")
+
+
+
+
 
 
 for(i in 1:nrow(cf1)){
   
-  cf11<-cf1[i,]
+  cf.temp<-cf1[i,]
   
   lines<-str_detect(cost.tabs$ID_to,"id_t[:digit:]") %>% which
   cost.tabs.used<-cost.tabs %>% slice(lines)
   
+  lists<-costs<-list()
   for(j in 1:nrow(cost.tabs.used)){
     
-    if(j==1) to<-cf11
     is<-cost.tabs.used[j,]
+    cf2.read<-dbGetQuery(con,statement=paste("select * from",is$Table,"where",is$ID_to,"=",unique(to$ID_T1))) %>% as.tibble
+    cf2.read<-costfun.spectros(cf2.read)
+    cf2.read<-costfun.param_user(cf2.read)
+    cf2.read<-costfun.lut(cf2.read)
     
-    cf2.read<-dbGetQuery(con,statement=paste("select * from",is$Table,"where",is$ID_to,"=",to$ID_T1)) %>% as.tibble
-    to<-.sqljoin(to,cf2.read)
-    
-    
+    costs[[j]]<-cf2.read
   }
-  map(cost.tabs.used$Table,function(x){
+    # Extract the User Parameters
+    cf2.read<-costfun.param_user(cf2.read)
+    cf2.read<-costfun.spectros(cf2.read)
     
-    cf2.read<-dbGetQuery(con,statement=paste("select * from",x,"where")) %>% as.tibble
-    print(cf11[1,])
-    cf11<-.sqljoin(cf11,cf2.read)
-    print(cf11[1,])
-    
-    
-  })
-  
+    lists[[j]]<-cf2.read
+  }
 }
-
 
 cf2.read<-dbGetQuery(con,statement=paste("select * from",tables.srt$Table[2])) %>% as.tibble
 cf2<-.sqljoin(cf1,cf2.read)
@@ -107,3 +104,44 @@ cf7<-.sqljoin(cf6,cf7.read)
 cf8.read<-dbGetQuery(con,statement=paste("select * from",tables.srt$Table[8])) %>% as.tibble
 cf8<-.sqljoin(cf7,cf8.read)
 
+
+# for(i in 1:nrow(cf1)){
+#   
+#   cf.temp<-cf1[i,]
+#   
+#   lines<-str_detect(cost.tabs$ID_to,"id_t[:digit:]") %>% which
+#   cost.tabs.used<-cost.tabs %>% slice(lines)
+#   
+#   #nrow(cost.tabs.used)
+#   for(j in 1:5){
+#     
+#     if(j==1) to<-cf.temp
+#     is<-cost.tabs.used[j,]
+#     
+#     cf2.read<-dbGetQuery(con,statement=paste("select * from",is$Table,"where",is$ID_to,"=",unique(to$ID_T1))) %>% as.tibble
+#     to<-.sqljoin(to,cf2.read)
+#     
+#   }
+# }
+
+
+
+
+
+# cf1<-cf1.read %>% 
+#   mutate(Info=map(general_info,function(x){
+#     
+#     matall<-readMat(x)$data[,,1]
+#     matall.rtm<-matall$rtm[,,1] %>% 
+#       melt %>% 
+#       select(Type=L1,Value=value)
+#     
+#   })) %>% select(-general_info)
+# 
+# # Construct the PY_ID later linked to the File Structure
+# cf1.id<-cf1 %>% 
+#   mutate(PY_ID=map_dbl(Info,function(x) {
+#     
+#     x %>% filter(Type=="id") %>% select(Value) %>% as.numeric
+#     
+#   }))
