@@ -12,7 +12,7 @@ rawTrans<-function(input){
   size    <- filter(ref,ID==format[1])$Bits
   
   number.raw<- input[13:length(input)]
-  numbers   <- readBin(number.raw, numeric() ,n=format[2],size=size)
+  numbers   <- readBin(number.raw, numeric() ,n=length(number.raw) %/% 8,size=4)
   
   tst<-list()
   tst$datatype  <- format
@@ -32,8 +32,12 @@ original<- costs[[2]]$param_user[[1]] %>% filter(param_user=="label") %>% select
 modelled<- a$numbers
 plot(original, modelled)
 
-a<-rawTrans(input=costs[[6]]$donde[[2]])
-a<-rawTrans(input=costs[[6]]$cuanto[[2]])
+donde<-rawTrans(input=costs[[6]]$donde[[2]])
+cuando<-rawTrans(input=costs[[6]]$cuanto[[2]])
+
+number.raw %>% rawToBits() %>% .[1:4]
+
+number.raw %>% rawToBits() %>% .[1:4] %>% paste(.,collapse = "")
 
 # raw<-costs[[7]]$resultados[[1]]
 # number.raw<- raw[13:length(raw)]

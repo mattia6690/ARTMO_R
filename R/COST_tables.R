@@ -2,6 +2,8 @@
 
 source("R/Essentials.R")
 
+outdir<-"C:/ARTMO/"
+
 Stab<-dbGetQuery(con,statement=paste("show tables like '%test_%'")) %>% unlist(use.names = F)
 Stab.replace<- map(Stab,function(x) str_replace(x,"_inv",""))
 
@@ -67,6 +69,8 @@ for(i in 1:nrow(cf1)){
   
   cf.temp<-cf1[i,]
   
+  outdir.py<-paste(outdir,cf.temp$Database,cf.temp$Project,cf.temp$PY_ID,sep="/")
+  
   lines<-str_detect(cost.tabs$ID_to,"id_t[:digit:]") %>% which
   cost.tabs.used<-cost.tabs %>% slice(lines)
   
@@ -74,19 +78,15 @@ for(i in 1:nrow(cf1)){
   for(j in 1:nrow(cost.tabs.used)){
     
     is<-cost.tabs.used[j,]
-    cf2.read<-dbGetQuery(con,statement=paste("select * from",is$Table,"where",is$ID_to,"=",unique(to$ID_T1))) %>% as.tibble
+    cf2.read<-dbGetQuery(con,statement=paste("select * from",is$Table,"where",is$ID_to,"=",unique(cf.temp$ID_T1))) %>% as.tibble
     cf2.read<-costfun.spectros(cf2.read)
     cf2.read<-costfun.param_user(cf2.read)
     cf2.read<-costfun.lut(cf2.read)
     
     costs[[j]]<-cf2.read
   }
-    # Extract the User Parameters
-    cf2.read<-costfun.param_user(cf2.read)
-    cf2.read<-costfun.spectros(cf2.read)
-    
-    lists[[j]]<-cf2.read
-  }
+  
+  names(costs)<-cost.tabs.used$Table
 }
 
 cf2.read<-dbGetQuery(con,statement=paste("select * from",tables.srt$Table[2])) %>% as.tibble
