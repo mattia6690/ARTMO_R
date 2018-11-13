@@ -3,6 +3,18 @@
 #' The functions are divided by steps taken for accessing the Databases
 ################################
 
+
+# General -----------------------------------
+# Create the Real names and Type of Table
+cost.tableclass<-function(x){
+  
+  y1<-str_replace(x,"_inv","")
+  y2<-str_split(y1,"_") %>% unlist
+  y3<-c(paste(y2[1],y2[2],sep = "_"),y2[3])
+  return(y3)
+}
+
+# Blobs to Tibble--------
 # Change of the Param_user Matlab Tab
 costfun.param_user<-function(table){
   
@@ -44,24 +56,136 @@ costfun.spectros<-function(table){
   return(out)
 }
 
+# Change the LUT in the "Class" Table
 costfun.lut<-function(table){
   
   istab<-any(names(table)=="lut")
-  if(isTRUE(istab)){
+  if(isTRUE(istab) ){
     
-    lut<-readMat(table$lut[[1]])$data
-    extracts<-c("nom.modelo","vinput","vclass","vmodel","tablasocio","output")
-    mp <- map(extracts,function(x,l=lut) { l[x,,1] %>% unlist(use.names = F)})
-    
-    master<- mp %>% bind_cols %>% setNames(extracts)
-    master$spectral<-lut["spectral",,1] %>% unlist(use.names = F) %>% list
-    master$vsalidas<-lut["vsalidas",,1]$vsalidas[,,1] %>% unlist(use.names = F) %>% list
-    master$id.mod  <-lut["id.modelo",,1] %>% bind_cols %>% unnest %>% list
-    
-    out <-table %>% select(-lut) %>% mutate(lut=list(master))
-    
+    lut<-tryCatch(readMat(table$lut[[1]])$data,error=function(e) NULL)
+    if(!is.null(lut)) {
+      
+      extracts<-c("nom.modelo","vinput","vclass","vmodel","tablasocio","output")
+      mp <- map(extracts,function(x,l=lut) { l[x,,1] %>% unlist(use.names = F)})
+      
+      master<- mp %>% bind_cols %>% setNames(extracts)
+      master$spectral<-lut["spectral",,1] %>% unlist(use.names = F) %>% list
+      master$vsalidas<-lut["vsalidas",,1]$vsalidas[,,1] %>% unlist(use.names = F) %>% list
+      master$id.mod  <-lut["id.modelo",,1] %>% bind_cols %>% unnest %>% list
+      
+      out <-table %>% select(-lut) %>% mutate(lut=list(master))
+      
+    } else {out <- table}
   } else {out <- table}
   return(out)
 }
 
 
+
+# Tables ------------------------------------
+#' Checks which Tables are available in the MYSQL Database relating to LUT inversion
+get.stat.tab<-function(con) {
+  
+  # Which Tables are actually available in the MySQL file
+  Stab<-dbGetQuery(con,statement=paste("show tables like '%test_%'")) %>% unlist(use.names = F)
+  Stab.replace<- map(Stab,function(x) str_replace(x,"_inv",""))
+  
+  # Collect all the Information from the Tables according to the Test prefix
+  cost.tabs.all<-map(Stab,function(x){
+    
+    cnt  <- dbGetQuery(con,statement=paste("select count(*) from",x))[[1]] %>% as.numeric
+    read <- dbGetQuery(con,statement=paste0("select * from information_schema.columns where table_name='",x,"' and column_name like 'id%'")) %>% as.tibble
+    r1   <- read %>% 
+      filter(TABLE_SCHEMA==database) %>% 
+      select(Database=TABLE_SCHEMA,Table=TABLE_NAME,IDs=COLUMN_NAME)
+    r1$Count<-cnt
+    
+    r1$Table_Type<-map_chr(r1$Table,function(x) cost.tableclass(x)[1])
+    r1$Table_Name<-map_chr(r1$Table,function(x) cost.tableclass(x)[2])
+    
+    return(r1)
+    
+  }) %>% do.call(rbind,.)
+  
+  arr<-   cost.tabs.all %>% arrange(Table_Type,IDs) 
+  from<-  arr %>% filter(grepl("ID_T",IDs)) %>% mutate(ID_from=IDs) %>% select(-IDs)
+  to <-   arr %>% filter(grepl("id_t",IDs)) %>% mutate(ID_to=IDs) %>% select(-IDs)
+  cost.tabs     <- left_join(from,to) %>% filter(Count>0)
+  
+  return(cost.tabs)
+}
+
+
+#' Return the Metainformation stored in the first table
+#' The first COST Table (id_T1) is afterwards removed and the data
+#' grouped the final output folder too guarantee a right connection
+get.stat.meta<-function(con,tables){
+  
+  # Search for the first Table
+  begin<-tables %>% filter(ID_from=="ID_T1")
+  cf1.read<-dbGetQuery(con,statement=paste("select * from",begin$Table)) %>% as.tibble
+  
+  #' Search for the important information (RTM, DB, PROJECT etc.)
+  #' It is a Malab File -> Workaround
+  meta<-map_df(cf1.read$general_info,function(x){
+    
+    matall<-readMat(x)$data[,,1]
+    matall.rtm<-matall$rtm[,,1] %>% 
+      melt %>% 
+      select(Type=L1,Value=value) %>% 
+      filter(Type!="rtm") %>% t %>% as.tibble
+    colnames(matall.rtm)<-matall.rtm[1,]
+    matall.rtm<-matall.rtm %>% dplyr::select(database,project,id,date)
+    matall.rtm<-matall.rtm[-1,]
+    return(matall.rtm)
+    
+  })
+  
+  # Bind the results and rename the columns
+  cf1<- bind_cols(cf1.read,meta) %>% dplyr::select(-general_info)
+  colnames(cf1)<-c("ID_T1","Model","Database","Project","PY_ID","Date")
+  
+  return(cf1)
+}
+
+#' Extracts the value for all the COST Tables (beisides the first one, see above)
+#' Builds df returns from Blobs depending on the Column
+#' Joins all the MySQL Files to one table
+get.stat.metrics<-function(con,table){
+  
+  lines<-str_detect(table$ID_to,"id_t[:digit:]") %>% which
+  if(length(lines)<1) return(NA)
+  cost.tabs.used<- table %>% slice(lines)
+  
+  tabs<-unique(cost.tabs.used$Table)
+  tabs.names<-unique(cost.tabs.used$Table_Name)
+  tabs.id<-unique(table$ID_T1)
+  
+  # Read the Table
+  tabs<-map2(tabs,tabs.names,function(x,y,id=tabs.id){
+    
+    # No Donde and Cuando. Take too much space
+    if(y!="noise") read<-dbGetQuery(con,statement=paste("select * from",x))
+    if(y=="noise") read<-dbGetQuery(con,statement=paste("select ID_T7,id_t6,noise from",x))
+    
+    if(any(colnames(read)=="id_t1")) read<-filter(read,id_t1==id)
+    
+    read<-as.tibble(read)
+    read<-costfun.spectros(read)
+    read<-costfun.param_user(read)
+    read<-costfun.lut(read)
+    
+  })
+  
+  # Join by IDs (automatic detection)
+  for(i in 2:length(tabs)){
+    
+    if(i==2)  join<-.sqljoin(tabs[[i-1]],tabs[[i]])
+    if(i>2)   join<-.sqljoin(join,tabs[[i]])
+    
+  }
+  
+  # Delete all the columns containing 
+  join<-join %>% select(-contains("id_"))
+  return(join)
+}
