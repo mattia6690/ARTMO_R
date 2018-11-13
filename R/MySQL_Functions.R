@@ -67,8 +67,24 @@ read.models.artmo<- function(model){
 }
 
 # Getter -----------------------
+
+# List all the Tables in ARTMO
+
+get.tables.db<-function(con){
+  
+  ret<-dbGetQuery(con2,"show table status") %>% 
+    filter(Rows>0) %>%
+    mutate(Rows=as.numeric(Rows),
+           Avg_row_length=as.numeric(Avg_row_length),
+           Data_length=as.numeric(Data_length)) %>% 
+    select(Name,Rows,Avg_row_length,Data_length)
+  
+  return(ret)
+  
+}
+
 #' Get the MASTER File
-get.master.artmo<- function(con){
+get.master.db<- function(con){
   
   master  <- RMariaDB::dbReadTable(con,"master") %>% 
     as.tibble %>% 
@@ -77,7 +93,7 @@ get.master.artmo<- function(con){
 }
 
 #' Get the SENSOR File
-get.sensor.artmo<-function(x){
+get.sensor.db<-function(x){
 
   if(is.na(x$TIME_MODEL)){
     
@@ -104,9 +120,9 @@ set.directory.artmo <- function(con,dir){
   dir.database<-paste0(dir,dbGetInfo(con)$dbname,"/")
   dircheckup(dir.database)
   
-  master  <- get.master(con)
+  master  <- get.master.db(con)
   name<-paste0(dir.database,"Master.rds")
-  if(!file.exists(name)) saveRDS(master,file=name)
+  saveRDS(master,file=name)
   return(dir.database)
 }
 
@@ -126,7 +142,7 @@ set.projects.artmo <- function(con,dir){
       dircheckup(paste0(dir1,"/Scenes/"))
       
       sens.n  <- paste0(dir1,"/Sensor.txt")
-      sensor  <- artmo.getSensor(dat)
+      sensor  <- get.sensor.db(dat)
       if(!file.exists(sens.n)) write.table(sensor,file=sens.n,row.names = F,sep = ",")
       return(sensor)
       
@@ -139,7 +155,7 @@ set.projects.artmo <- function(con,dir){
     x<-master[i,]
     
     dir1 <-paste0(dir.database,x$NAME_PROYECT,"/",x$ID_SIMULATION,"/")
-    metric.n  <- paste0(dir1,x$NAME_MODEL,"_Model_Metrics.rds")
+    metric.n  <- paste0(dir1,"Model_Param_",x$NAME_MODEL,".rds")
     options(warn=-1)
     if(!file.exists(metric.n)){
       
@@ -165,7 +181,7 @@ set.projects.artmo <- function(con,dir){
       names(model)<-tabs
       model<-Filter(Negate(is.null),model)
       model<-model[[which(lapply(model,ncol)>1) %>% names]]
-      model<-artmo_readModel(model)
+      model<-read.models.artmo(model)
       model<-model %>% add_column(Model=x$NAME_MODEL,.before = T)
       saveRDS(model,file = metric.n)
       options(warn=0)
@@ -182,7 +198,8 @@ set.projects.artmo <- function(con,dir){
 
 .sqljoin<-function(tableto,tablefrom){
   
-  colnames(tablefrom)<-toupper(colnames(tablefrom))
+  colnames(tablefrom)<-tolower(colnames(tablefrom))
+  colnames(tableto)<-tolower(colnames(tableto))
   tojoin<-colnames(tablefrom)[2]
   ret<-left_join(tableto,tablefrom,by=tojoin)
   return(ret)
