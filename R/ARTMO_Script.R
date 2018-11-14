@@ -66,24 +66,7 @@ costs.meta<-costs.temp %>%
   unnest(.preserve=data) %>% 
   unnest 
 
-# Create the Output path 
-costs.path<-costs.meta %>% 
-  mutate(Path=pmap_chr(list(Database,Project,PY_ID,Model,ID_costs),
-                       function(v,w,x,y,z,dir=directory) {
-    
-    pt1<-paste(dir,v,w,x,"Statistics/",sep="/")
-    dircheckup(pt1)
-    pt2<-paste0(y,"-",z)
-    
-    all<-paste0(pt1,pt2)
-    return(all)
-    
-  }))
 
-# Add the Tables MySQL tables
-# ACTUAL Phase of Development
-costs.path.split<-split(costs.path,1:nrow(costs.path))
-costs.path$costs<-map(costs.path.split,function(x,c=con2) get.stat.metrics(c,x))
 
 costs.path<-costs.meta %>% 
   group_by(Database,Model,Project,PY_ID,Date) %>% 
@@ -97,9 +80,13 @@ costs.path<-costs.meta %>%
     }))
 
 costs.list<-costs.path %>% 
-  mutate(Statistics=map(data,function(x,c=con2) ret<-get.stat.metrics(c,x)))
+  mutate(Statistics=map(data,function(x,c=con2) {
+    ret<-get.stat.metrics(c,x,verbose=T)
+}))
 
-costs.list2<-costs.list %>% select(-data)
+costs.list2<-costs.list %>% select(-data) %>% unnest
+
+saveRDS(costs.list2,file = paste0(directory,"/",database,"/","Statistics.rds"))
 
 # Write the COST Tables
 a<-map2_chr(costs.list$Path,costs.list$Statistics,function(x,y){
@@ -118,3 +105,28 @@ a<-map2_chr(costs.list$Path,costs.list$Statistics,function(x,y){
 source("R/ui.R")
 source("R/server.R")
 shinyApp(ui=ui,server=server)
+
+
+
+# Test --------------------------------------
+# Create the Output path 
+costs.path<-costs.meta %>% 
+  mutate(Path=pmap_chr(list(Database,Project,PY_ID,Model,ID_costs),
+                       function(v,w,x,y,z,dir=directory) {
+                         
+                         pt1<-paste(dir,v,w,x,"Statistics/",sep="/")
+                         dircheckup(pt1)
+                         pt2<-paste0(y,"-",z)
+                         
+                         all<-paste0(pt1,pt2)
+                         return(all)
+                         
+                       }))
+
+# Add the Tables MySQL tables
+# ACTUAL Phase of Development
+costs.path.split<-split(costs.path,1:nrow(costs.path))
+costs.path$costs<-map(costs.path.split,function(x,c=con2) get.stat.metrics(c,x))
+
+
+
