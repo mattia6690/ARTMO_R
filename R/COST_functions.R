@@ -3,6 +3,7 @@
 #' The functions are divided by steps taken for accessing the Databases
 ################################
 
+source("R/Binary_functions.R")
 
 # General -----------------------------------
 # Create the Real names and Type of Table
@@ -80,7 +81,18 @@ costfun.lut<-function(table){
   return(out)
 }
 
-
+costfun.resultados<-function(table){
+  
+  istab<-any(names(table)=="resultados")
+  if(isTRUE(istab) ){
+    
+    raws<-table$resultados
+    numbs<-map(raws,function(x) rawTrans(x)$numbers)
+    out<-table %>% mutate(resultados=numbs)
+    
+    return(out)
+  } else {return(table)}
+}
 
 # Tables ------------------------------------
 #' Checks which Tables are available in the MYSQL Database relating to LUT inversion
@@ -151,8 +163,10 @@ get.stat.meta<-function(con,tables){
 #' Extracts the value for all the COST Tables (beisides the first one, see above)
 #' Builds df returns from Blobs depending on the Column
 #' Joins all the MySQL Files to one table
-get.stat.metrics<-function(con,table){
+get.stat.metrics<-function(con,table,verbose=F){
   
+  ##################################'
+  if(verbose==T) cat("Starting...")
   lines<-str_detect(table$ID_to,"id_t[:digit:]") %>% which
   if(length(lines)<1) return(NA)
   cost.tabs.used<- table %>% slice(lines)
@@ -161,31 +175,42 @@ get.stat.metrics<-function(con,table){
   tabs.names<-unique(cost.tabs.used$Table_Name)
   tabs.id<-unique(table$ID_T1)
   
-  # Read the Table
-  tabs<-map2(tabs,tabs.names,function(x,y,id=tabs.id){
+  #################################'
+  if(verbose==T) cat("Reading...")
+  tabs.all<-map2(tabs,tabs.names,function(x,y,id=tabs.id){
     
-    # No Donde and Cuando. Take too much space
+    # No Donde and Cuando. Take too much space na dare not crucial
     if(y!="noise") read<-dbGetQuery(con,statement=paste("select * from",x))
     if(y=="noise") read<-dbGetQuery(con,statement=paste("select ID_T7,id_t6,noise from",x))
-    
     if(any(colnames(read)=="id_t1")) read<-filter(read,id_t1==id)
-    
-    read<-as.tibble(read)
-    read<-costfun.spectros(read)
-    read<-costfun.param_user(read)
-    read<-costfun.lut(read)
+    return(read)
     
   })
   
-  # Join by IDs (automatic detection)
-  for(i in 2:length(tabs)){
+  #################################'
+  if(verbose==T) cat("Transforming...")
+  tabs.all2<-map(tabs.all,function(x){
     
-    if(i==2)  join<-.sqljoin(tabs[[i-1]],tabs[[i]])
-    if(i>2)   join<-.sqljoin(join,tabs[[i]])
+    read<-as.tibble(x)
+    read<-costfun.spectros(read)
+    read<-costfun.param_user(read)
+    read<-costfun.lut(read)
+    read<-costfun.resultados(read)
+    return(read)
+    
+  })
+  
+  #################################'
+  if(verbose==T) cat("Joining...")
+  for(i in 2:length(tabs.all2)){
+    
+    if(i==2)  join<-.sqljoin(tabs.all2[[i-1]],tabs.all2[[i]])
+    if(i>2)   join<-.sqljoin(join,tabs.all2[[i]])
     
   }
   
-  # Delete all the columns containing 
+  #################################'
+  if(verbose==T) cat("Formatting...\n")
   join<-join %>% select(-contains("id_"))
   return(join)
 }
