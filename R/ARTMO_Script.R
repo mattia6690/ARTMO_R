@@ -1,4 +1,4 @@
-#' 
+
 #' Modular Script for executing the unction and to access the ARTMO Databases
 #' The Codes are divided in 
 #' (i)    General Environment and Input 
@@ -50,52 +50,35 @@ db.master<- get.master.db(con2) %>%
 set.directory.artmo(con2,directory)
 set.projects.artmo(con2,directory)
 
-
 # Statistics -------------------------------
 #' Function to access the COST functions within each database and to extract them in an R friendly way
 #' The biggest problems are the Links between the various IDs as well as the conversions of Blob (Binary) to arrays
 #' NOT FINISHED YET (09/11/18)
 
-# Get all cost functions
-costs.all<-get.stat.tab(con2) %>% mutate(ID_costs=1:nrow(.))
+costs.list<-get.stat.artmo(con2)
 
-# Get Metainformation from cOST functions
-costs.temp<-costs.all %>% group_by(Database) %>% nest
-costs.meta<-costs.temp %>% 
-  mutate(costs=map(data,function(x,c=con2) get.stat.meta(con2,x))) %>% 
-  unnest(.preserve=data) %>% 
-  unnest 
+costs.list.short<-export.lyt(costs.list,what="short")
+costs.list.long <-export.lyt(costs.list,what="long")
+costs.list.stat <-export.lyt(costs.list,what="stat")
+costs.list2<-costs.list %>% unnest
+
+saveRDS(costs.list.stat,file = paste0(directory,"/",database,"/",i,"_info.rds"))
+
+# Plotting ----------------------------------
+# Spectra
+
+plt<-costs.list2$spectros_user[[1]] 
+ggplot(plt,aes(Wavelength,Value,group=Iteration,color=Iteration))+
+  geom_line()+
+  ggtitle("User Spectra")+
+  scale_color_gradientn(colors=terrain.colors(200))
+
+# Model Performance
+
+plt<-costs.list$Statistics[[1]]
 
 
 
-costs.path<-costs.meta %>% 
-  group_by(Database,Model,Project,PY_ID,Date) %>% 
-  nest %>% 
-  mutate(Path=pmap_chr(
-    list(Database,Project,PY_ID,Model), function(v,w,x,y,dir=directory) {
-      
-      pt1<-paste(dir,v,w,x,"Statistics",sep="/")
-      pt2<-paste(pt1,y,sep="_")
-      
-    }))
-
-costs.list<-costs.path %>% 
-  mutate(Statistics=map(data,function(x,c=con2) {
-    ret<-get.stat.metrics(c,x,verbose=T)
-}))
-
-costs.list2<-costs.list %>% select(-data) %>% unnest
-
-saveRDS(costs.list2,file = paste0(directory,"/",database,"/","Statistics.rds"))
-
-# Write the COST Tables
-a<-map2_chr(costs.list$Path,costs.list$Statistics,function(x,y){
-  
-  name<-paste0(x,".rds")
-  saveRDS(y,file = paste0(x,".rds"))
-  paste(name,"    Successfully Exported")
-  
-})
 
 # Shiny -------------------------------------
 #' The Shiny Web-Application provides a possibility to use the presented functions
@@ -105,28 +88,4 @@ a<-map2_chr(costs.list$Path,costs.list$Statistics,function(x,y){
 source("R/ui.R")
 source("R/server.R")
 shinyApp(ui=ui,server=server)
-
-
-
-# Test --------------------------------------
-# Create the Output path 
-costs.path<-costs.meta %>% 
-  mutate(Path=pmap_chr(list(Database,Project,PY_ID,Model,ID_costs),
-                       function(v,w,x,y,z,dir=directory) {
-                         
-                         pt1<-paste(dir,v,w,x,"Statistics/",sep="/")
-                         dircheckup(pt1)
-                         pt2<-paste0(y,"-",z)
-                         
-                         all<-paste0(pt1,pt2)
-                         return(all)
-                         
-                       }))
-
-# Add the Tables MySQL tables
-# ACTUAL Phase of Development
-costs.path.split<-split(costs.path,1:nrow(costs.path))
-costs.path$costs<-map(costs.path.split,function(x,c=con2) get.stat.metrics(c,x))
-
-
 
