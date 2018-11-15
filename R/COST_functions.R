@@ -1,7 +1,7 @@
 #' Functions for Extracting the COST Functions
 #' 
 #' The functions are divided by steps taken for accessing the Databases
-################################
+################################'
 
 source("R/Binary_functions.R")
 
@@ -245,17 +245,10 @@ get.stat.artmo<-function(con){
     unnest(.preserve=data) %>% 
     unnest 
   
-  costs.path<-costs.meta %>% 
+  # Extract the actual Statistics for each Iteration
+  costs.nest<-costs.meta %>% 
     group_by(Database,Model,Project,PY_ID,Date) %>% 
     nest %>% 
-    mutate(Path=pmap_chr(
-      list(Database,Project,PY_ID,Model), function(v,w,x,y,dir=directory) {
-        
-        pt1<-paste(dir,v,w,x,sep="/")
-        
-      }))
-  
-  costs.list<-costs.path %>% 
     mutate(Statistics=map2(data,Model,function(x,y,c=con) {
       
       print(paste("Process Statistics of Model:",y))
@@ -263,10 +256,7 @@ get.stat.artmo<-function(con){
       
     })) %>% select(-data)
   
-  
 }
-
-
 
 # Table Layout
 
