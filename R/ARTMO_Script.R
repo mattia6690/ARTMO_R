@@ -12,6 +12,7 @@
 source("R/Essentials.R")
 source("R/MySQL_Functions.R")
 source("R/COST_functions.R")
+source("R/Plot_functions.R")
 
 directory <- "C:/ARTMO/"
 user="root"
@@ -62,22 +63,23 @@ costs.list.long <-export.lyt(costs.list,what="long")
 costs.list.stat <-export.lyt(costs.list,what="stat")
 costs.list2<-costs.list %>% unnest
 
-saveRDS(costs.list.stat,file = paste0(directory,"/",database,"/",i,"_info.rds"))
+#saveRDS(costs.list.stat,file = paste0(directory,"/",database,"/",i,"_info.rds"))
 
-# Plotting ----------------------------------
-# Spectra
+#' Plotting ----------------------------------
+#' Exploration of a Model of our choice within the costs.list
 
-plt<-costs.list2$spectros_user[[1]] 
+model<-"Model1"
+
+#' Plot the Spectral Statistics generated
+plt<-costs.list.short$Statistics[[1]]$spectros_user[[1]] 
 ggplot(plt,aes(Wavelength,Value,group=Iteration,color=Iteration))+
   geom_line()+
   ggtitle("User Spectra")+
   scale_color_gradientn(colors=terrain.colors(200))
 
-# Model Performance
-
-plt<-costs.list$Statistics[[1]]
-
-
+# Plot the Model Statistics
+explore.model.gg(model,costs.list.short)
+explore.model.gg(model,costs.list.short,stat.subset="r2")
 
 
 # Shiny -------------------------------------
