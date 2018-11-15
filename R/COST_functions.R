@@ -24,7 +24,13 @@ costfun.param_user<-function(table){
     
     mapper<-map(table$param_user,function(x){
       
-      readMat(x)$data[,,1] %>% melt %>% select(param_user=L1,param_user_val=value)
+      readMat(x)$data[,,1] %>% 
+        melt %>% 
+        select(param_user=L1,param_user_val=value) %>% 
+        filter(param_user=="label") %>% 
+        select(param_user_val) %>% 
+        unlist(use.names = F) %>% 
+        as.numeric
       
     })
     out <-table %>% select(-param_user) %>% mutate(param_user=mapper)
@@ -70,11 +76,22 @@ costfun.lut<-function(table){
       mp <- map(extracts,function(x,l=lut) { l[x,,1] %>% unlist(use.names = F)})
       
       master<- mp %>% bind_cols %>% setNames(extracts)
-      master$spectral<-lut["spectral",,1] %>% unlist(use.names = F) %>% list
-      master$vsalidas<-lut["vsalidas",,1]$vsalidas[,,1] %>% unlist(use.names = F) %>% list
-      master$id.mod  <-lut["id.modelo",,1] %>% bind_cols %>% unnest %>% list
+      spectral<-lut["spectral",,1] %>% unlist(use.names = F)
+      vsalidas<-lut["vsalidas",,1]$vsalidas[,,1] %>% unlist(use.names = F)
       
+      diff<-length(spectral)/length(vsalidas)
+      vsalidas.rep<- rep(vsalidas,each=diff)
+      Spec_id<-seq(1,length(vsalidas),1) %>% rep(each=vsalidas)
+      
+      lut<-cbind(Spec_id,vsalidas.rep,spectral) %>% 
+        as.tibble %>% 
+        setNames(c("LUT_ID","Vsalidas","Spectra")) %>% 
+        list
+        
+      master$LUT<-lut
       out <-table %>% select(-lut) %>% mutate(lut=list(master))
+      #id.mod  <-lut["id.modelo",,1] %>% bind_cols %>% unnest %>% list
+      #out <-table %>% select(-lut) %>% mutate(lut=list(master))
       
     } else {out <- table}
   } else {out <- table}
@@ -214,3 +231,64 @@ get.stat.metrics<-function(con,table,verbose=F){
   join<-join %>% select(-contains("id_"))
   return(join)
 }
+
+
+get.stat.artmo<-function(con){
+  
+  # Get all cost functions
+  costs.all<-get.stat.tab(con) %>% mutate(ID_costs=1:nrow(.))
+  
+  # Get Metainformation from cOST functions
+  costs.temp<-costs.all %>% group_by(Database,Table_Type) %>% nest
+  costs.meta<-costs.temp %>% 
+    mutate(costs=map(data,function(x,c=con2) get.stat.meta(con,x))) %>% 
+    unnest(.preserve=data) %>% 
+    unnest 
+  
+  costs.path<-costs.meta %>% 
+    group_by(Database,Model,Project,PY_ID,Date) %>% 
+    nest %>% 
+    mutate(Path=pmap_chr(
+      list(Database,Project,PY_ID,Model), function(v,w,x,y,dir=directory) {
+        
+        pt1<-paste(dir,v,w,x,sep="/")
+        
+      }))
+  
+  costs.list<-costs.path %>% 
+    mutate(Statistics=map2(data,Model,function(x,y,c=con) {
+      
+      print(paste("Process Statistics of Model:",y))
+      get.stat.metrics(c,x)
+      
+    })) %>% select(-data)
+  
+  
+}
+
+
+
+# Table Layout
+
+export.lyt<-function(table,what="all"){
+  
+  if(what=="short") table<-table
+  if(what=="long")  table<-unnest(table)
+  if(what=="stat"){
+    
+    stats<-map(table$Statistics, function(x){
+      
+      x %>% dplyr::select(param_user,name_parameter,
+                          name_algoritmo,noise,
+                          me,rmse,relrmse,mae,r,r2,nrmse,ts,nse,tictoc,
+                          resultados)
+    })
+    
+    table$Statistics<-stats
+    
+  }
+  return(table)
+}
+
+
+
