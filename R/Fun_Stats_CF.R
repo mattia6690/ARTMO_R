@@ -1,9 +1,5 @@
-#' Functions for Extracting the COST Functions
-#' 
-#' The functions are divided by steps taken for accessing the Databases
-################################'
 
-source("R/Binary_functions.R")
+source("R/Fun_Binary.R")
 
 # General -----------------------------------
 # Create the Real names and Type of Table
@@ -17,6 +13,30 @@ cost.tableclass<-function(x){
 
 # Blobs to Tibble--------
 # Change of the Param_user Matlab Tab
+.cf.generalinfo<-function(table){
+  
+  mapper<-map(table$general_info,function(x){
+    
+    matall<-readMat(x)$data[,,1]
+    matall.rtm<-matall$rtm[,,1] %>% 
+      melt %>% 
+      select(Type=L1,Value=value) %>% 
+      filter(Type!="rtm") %>% t %>% as.tibble
+    colnames(matall.rtm)<-matall.rtm[1,]
+    matall.rtm<-matall.rtm %>% dplyr::select(database,project,id,date)
+    matall.rtm<-matall.rtm[-1,]
+    colnames(matall.rtm)<-c("Database","Project","PY_ID","Date")
+    matall.rtm<-as.tibble(matall.rtm)
+    
+    return(matall.rtm)
+    
+  })
+  
+  out <-table %>% select(-general_info) %>% mutate(general_info=mapper)
+  return(out)
+  
+}
+
 .cf.paramuser<-function(table){
   
   mapper<-map(table$param_user,function(x){
