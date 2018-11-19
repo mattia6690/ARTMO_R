@@ -17,104 +17,101 @@ cost.tableclass<-function(x){
 
 # Blobs to Tibble--------
 # Change of the Param_user Matlab Tab
-costfun.param_user<-function(table){
+.cf.paramuser<-function(table){
   
-  istab<-any(names(table)=="param_user")
-  if(isTRUE(istab)){
+  mapper<-map(table$param_user,function(x){
     
-    mapper<-map(table$param_user,function(x){
-      
-      readMat(x)$data[,,1] %>% 
-        melt %>% 
-        select(param_user=L1,param_user_val=value) %>% 
-        filter(param_user=="label") %>% 
-        select(param_user_val) %>% 
-        unlist(use.names = F) %>% 
-        as.numeric
-      
-    })
-    out <-table %>% select(-param_user) %>% mutate(param_user=mapper)
+    readMat(x)$data[,,1] %>% 
+      melt %>% 
+      select(param_user=L1,param_user_val=value) %>% 
+      filter(param_user=="label") %>% 
+      select(param_user_val) %>% 
+      unlist(use.names = F) %>% 
+      as.numeric
     
-  } else {out <- table}
+  })
+  out <-table %>% select(-param_user) %>% mutate(param_user=mapper)
   return(out)
 }
 
 # Change of the Spectros Matlab Tab
-costfun.spectros<-function(table){
+.cf.spectros<-function(table){
   
-  istab<-any(names(table)=="spectros_user")
-  if(isTRUE(istab)){
+  mapper<-map(table$spectros_user,function(x){
     
-    mapper<-map(table$spectros_user,function(x){
-      
-      s1<-readMat(x)$data[,,1]
-      s2<- s1$spectral
-      rownames(s2)<-s1$wl
-      s3 <- melt(s2) %>% 
-        setNames(c("Wavelength","Iteration","Value")) %>% 
-        as.tibble %>% 
-        mutate(Spectrum=sprintf("%03s",as.character(Iteration)))
-      
-    })
+    s1<-readMat(x)$data[,,1]
+    s2<- s1$spectral
+    rownames(s2)<-s1$wl
+    s3 <- melt(s2) %>% 
+      setNames(c("Wavelength","Iteration","Value")) %>% 
+      as.tibble %>% 
+      mutate(Spectrum=sprintf("%03s",as.character(Iteration)))
     
-    out <-table %>% select(-spectros_user) %>% mutate(spectros_user=mapper)
-    
-  } else {out <- table}
+  })
+  
+  out <-table %>% select(-spectros_user) %>% mutate(spectros_user=mapper)
   return(out)
 }
+
 
 # Change the LUT in the "Class" Table
-costfun.lut<-function(table){
+
+.cf.lut<-function(table){
   
-  istab<-any(names(table)=="lut")
-  if(isTRUE(istab) ){
+  lut<-tryCatch(readMat(table$lut[[1]])$data,error=function(e) NULL)
+  
+  if(!is.null(lut)) {
     
-    lut<-tryCatch(readMat(table$lut[[1]])$data,error=function(e) NULL)
-    if(!is.null(lut)) {
-      
-      extracts<-c("nom.modelo","vinput","vclass","vmodel","tablasocio","output")
-      mp <- map(extracts,function(x,l=lut) { l[x,,1] %>% unlist(use.names = F)})
-      
-      master<- mp %>% bind_cols %>% setNames(extracts)
-      spectral<-lut["spectral",,1] %>% unlist(use.names = F)
-      vsalidas<-lut["vsalidas",,1]$vsalidas[,,1] %>% unlist(use.names = F)
-      
-      diff<-length(spectral)/length(vsalidas)
-      vsalidas.rep<- rep(vsalidas,each=diff)
-      Spec_id<-seq(1,length(vsalidas),1) %>% rep(each=vsalidas)
-      
-      lut<-cbind(Spec_id,vsalidas.rep,spectral) %>% 
-        as.tibble %>% 
-        setNames(c("LUT_ID","Vsalidas","Spectra")) %>% 
-        list
-        
-      master$LUT<-lut
-      out <-table %>% select(-lut) %>% mutate(lut=list(master))
-      #id.mod  <-lut["id.modelo",,1] %>% bind_cols %>% unnest %>% list
-      #out <-table %>% select(-lut) %>% mutate(lut=list(master))
-      
-    } else {out <- table}
+    extracts<-c("nom.modelo","vinput","vclass","vmodel","tablasocio","output")
+    mp <- map(extracts,function(x,l=lut) { l[x,,1] %>% unlist(use.names = F)})
+    
+    master<- mp %>% bind_cols %>% setNames(extracts)
+    spectral<-lut["spectral",,1] %>% unlist(use.names = F)
+    vsalidas<-lut["vsalidas",,1]$vsalidas[,,1] %>% unlist(use.names = F)
+    
+    diff<-length(spectral)/length(vsalidas)
+    vsalidas.rep<- rep(vsalidas,each=diff)
+    Spec_id<-seq(1,length(vsalidas),1) %>% rep(each=vsalidas)
+    
+    lut<-cbind(Spec_id,vsalidas.rep,spectral) %>% 
+      as.tibble %>% 
+      setNames(c("LUT_ID","Vsalidas","Spectra")) %>% 
+      list
+    
+    master$LUT<-lut
+    out <-table %>% select(-lut) %>% mutate(lut=list(master))
+    #id.mod  <-lut["id.modelo",,1] %>% bind_cols %>% unnest %>% list
+    #out <-table %>% select(-lut) %>% mutate(lut=list(master))
+    
   } else {out <- table}
   return(out)
 }
 
-costfun.resultados<-function(table){
+.cf.resultados<-function(table){
   
-  istab<-any(names(table)=="resultados")
-  if(isTRUE(istab) ){
-    
-    raws<-table$resultados
-    numbs<-map(raws,function(x) rawTrans(x)$numbers)
-    out<-table %>% mutate(resultados=numbs)
-    
-    return(out)
-  } else {return(table)}
+  raws<-table$resultados
+  numbs<-map(raws,function(x) rawTrans(x)$numbers)
+  out<-table %>% mutate(resultados=numbs)
+  return(out)
 }
+  
+#   
+#   istab<-any(names(table)=="resultados")
+#   if(isTRUE(istab) ){
+#     
+#     raws<-table$resultados
+#     numbs<-map(raws,function(x) rawTrans(x)$numbers)
+#     out<-table %>% mutate(resultados=numbs)
+#     
+#     return(out)
+#   } else {return(table)}
+# }
 
 # Tables ------------------------------------
 #' Checks which Tables are available in the MYSQL Database relating to LUT inversion
 get.stat.tab<-function(con) {
   
+  db<-dbGetInfo(con)$dbname
   # Which Tables are actually available in the MySQL file
   Stab<-dbGetQuery(con,statement=paste("show tables like '%test_%'")) %>% unlist(use.names = F)
   Stab.replace<- map(Stab,function(x) str_replace(x,"_inv",""))
@@ -125,7 +122,7 @@ get.stat.tab<-function(con) {
     cnt  <- dbGetQuery(con,statement=paste("select count(*) from",x))[[1]] %>% as.numeric
     read <- dbGetQuery(con,statement=paste0("select * from information_schema.columns where table_name='",x,"' and column_name like 'id%'")) %>% as.tibble
     r1   <- read %>% 
-      filter(TABLE_SCHEMA==database) %>% 
+      filter(TABLE_SCHEMA==db) %>% 
       select(Database=TABLE_SCHEMA,Table=TABLE_NAME,IDs=COLUMN_NAME)
     r1$Count<-cnt
     
@@ -136,10 +133,12 @@ get.stat.tab<-function(con) {
     
   }) %>% do.call(rbind,.)
   
-  arr<-   cost.tabs.all %>% arrange(Table_Type,IDs) 
+  arr <-   cost.tabs.all %>% arrange(Table_Type,IDs) 
   from<-  arr %>% filter(grepl("ID_T",IDs)) %>% mutate(ID_from=IDs) %>% select(-IDs)
-  to <-   arr %>% filter(grepl("id_t",IDs)) %>% mutate(ID_to=IDs) %>% select(-IDs)
+  to  <-   arr %>% filter(grepl("id_t",IDs)) %>% mutate(ID_to=IDs) %>% select(-IDs)
   cost.tabs     <- left_join(from,to) %>% filter(Count>0)
+  cost.tabs$cost_id <- cost.tabs$ID_from %>% str_replace_all(.,"ID_T","") %>% as.numeric
+  cost.tabs<-cost.tabs %>% arrange(Table_Type,cost_id)
   
   return(cost.tabs)
 }
@@ -241,7 +240,7 @@ get.stat.artmo<-function(con){
   # Get Metainformation from cOST functions
   costs.temp<-costs.all %>% group_by(Database,Table_Type) %>% nest
   costs.meta<-costs.temp %>% 
-    mutate(costs=map(data,function(x,c=con2) get.stat.meta(con,x))) %>% 
+    mutate(costs=map(data,function(x,c=con) get.stat.meta(c,x))) %>% 
     unnest(.preserve=data) %>% 
     unnest 
   
