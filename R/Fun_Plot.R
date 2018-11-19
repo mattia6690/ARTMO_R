@@ -22,7 +22,6 @@ explore.spectral<-function(model,costs,colpal=NULL){
   return(g1)
 }
 
-
 # Explore the Outcome of a Model
 explore.model.gg<-function(model,costs,stat.subset=NULL){
   

@@ -72,7 +72,7 @@ read.models.artmo<- function(model){
 
 get.tables.db<-function(con){
   
-  ret<-dbGetQuery(con2,"show table status") %>% 
+  ret<-dbGetQuery(con,"show table status") %>% 
     filter(Rows>0) %>%
     mutate(Rows=as.numeric(Rows),
            Avg_row_length=as.numeric(Avg_row_length),
