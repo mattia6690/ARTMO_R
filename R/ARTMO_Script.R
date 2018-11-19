@@ -16,9 +16,9 @@ source("R/COST_functions.R")
 source("R/Plot_functions.R")
 
 directory <- "C:/ARTMO/"
-user="root"
-host="localhost"
-pw="123456"
+user <- "root"
+host <- "localhost"
+pw <- "123456"
 
 # Connection --------------
 # Connect to the ARTMO Server
