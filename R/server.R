@@ -59,17 +59,14 @@ server <- function(input, output, session) {
   })
   
   output$MySQL.str<- renderTable({
-    
-    dbGetQuery(database(),"show table status") %>% 
-      filter(Rows>0) %>%  
-      mutate(Rows=as.numeric(Rows),Avg_row_length=as.numeric(Avg_row_length),Data_length=as.numeric(Data_length)) %>% 
-      select(Name,Rows,Avg_row_length,Data_length)
+
+    get.tables.db(database())
     
   })
   
   output$MySQL.master<- renderDataTable({
     
-    master<-get.master.artmo(database()) %>% 
+    master<-get.master.db(database()) %>% 
       select(ID_MASTER,ID_PY,ID_SIMULATION,
              MODELS=NAME_MODEL,
              PROJECT=NAME_PROYECT,
