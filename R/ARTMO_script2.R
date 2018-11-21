@@ -30,10 +30,3 @@ stat.tabs<-getStats(con,stat.all)
 stat.join<-joinTabs(stat.tabs)
 stat.join.id<-map(stat.join$Tables,removeid)
 
-# TESTING -----------------------------------
-# Future Extraction of the Mmodel
-mmd<- join.conv$mmodel[[1]] %>% readMat %>% .$data
-mmd<-mmd %>% melt %>% as.tibble
-model<- mmd["model",,1]$model[,,1] %>% melt %>% select(model=L1,Value=value)
-mean<- mmd["mean",,1] %>% as.numeric
-pca <-mmd["mean",,1] 
