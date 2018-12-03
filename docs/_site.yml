@@ -7,3 +7,4 @@ navbar:
     - text: "Example"
       href: example.html
 
+output: html_document
