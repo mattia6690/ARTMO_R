@@ -1,6 +1,4 @@
 name: "Site"
-author: Mattia Rossi
-output: html_document
 navbar:
   title: "ARTMO R"
   left:
