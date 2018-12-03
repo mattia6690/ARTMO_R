@@ -13,7 +13,6 @@ dircheckup     <- function(mydir) {
   }
 }
 
-
 # Required Packages -------------------------------------------------------
 
 library("raster")

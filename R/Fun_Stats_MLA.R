@@ -5,6 +5,8 @@
 
 #### NOTE: Spelling mistakes are in the MySQL Database. No Errors
 
+
+# Core --------------------------------------
 # Plotcv Table
 .mlr.plotcv<-function(jtable){
   
@@ -33,16 +35,17 @@
 .mlr.wl<-function(jtable){
   
   tabout<-jtable %>% 
-    mutate(wl=map(wl,function(x) as.numeric(rawTrans(x)$numbers)))
+    mutate(wl=map(wl,function(x) as.numeric(rawTrans(x)$numbers))) %>% 
+    rename(Model=test_name)
   return(tabout)
   
 }
 
 
-# TESTING -----------------------------------
-# Future Extraction of the Mmodel
-mmd<- join.conv$mmodel[[1]] %>% readMat %>% .$data
-mmd<-mmd %>% melt %>% as.tibble
-model<- mmd["model",,1]$model[,,1] %>% melt %>% select(model=L1,Value=value)
-mean<- mmd["mean",,1] %>% as.numeric
-pca <-mmd["mean",,1] 
+# 
+# # Future Extraction of the Mmodel
+# mmd<- join.conv$mmodel[[1]] %>% readMat %>% .$data
+# mmd<-mmd %>% melt %>% as.tibble
+# model<- mmd["model",,1]$model[,,1] %>% melt %>% select(model=L1,Value=value)
+# mean<- mmd["mean",,1] %>% as.numeric
+# pca <-mmd["mean",,1] 

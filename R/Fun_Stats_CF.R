@@ -2,7 +2,7 @@
 source("R/Fun_Binary.R")
 
 # General -----------------------------------
-# Create the Real names and Type of Table
+# Create the Real names and Type of Table. Somehow the Fist CF Table has an INV in between
 cost.tableclass<-function(x){
   
   y1<-str_replace(x,"_inv","")
@@ -11,7 +11,7 @@ cost.tableclass<-function(x){
   return(y3)
 }
 
-# Blobs to Tibble--------
+# Core --------
 # Change of the Param_user Matlab Tab
 .cf.generalinfo<-function(table){
   
@@ -126,178 +126,4 @@ cost.tableclass<-function(x){
 #     return(out)
 #   } else {return(table)}
 # }
-
-# Tables ------------------------------------
-#' Checks which Tables are available in the MYSQL Database relating to LUT inversion
-get.stat.tab<-function(con) {
-  
-  db<-dbGetInfo(con)$dbname
-  # Which Tables are actually available in the MySQL file
-  Stab<-dbGetQuery(con,statement=paste("show tables like '%test_%'")) %>% unlist(use.names = F)
-  Stab.replace<- map(Stab,function(x) str_replace(x,"_inv",""))
-  
-  # Collect all the Information from the Tables according to the Test prefix
-  cost.tabs.all<-map(Stab,function(x){
-    
-    cnt  <- dbGetQuery(con,statement=paste("select count(*) from",x))[[1]] %>% as.numeric
-    read <- dbGetQuery(con,statement=paste0("select * from information_schema.columns where table_name='",x,"' and column_name like 'id%'")) %>% as.tibble
-    r1   <- read %>% 
-      filter(TABLE_SCHEMA==db) %>% 
-      select(Database=TABLE_SCHEMA,Table=TABLE_NAME,IDs=COLUMN_NAME)
-    r1$Count<-cnt
-    
-    r1$Table_Type<-map_chr(r1$Table,function(x) cost.tableclass(x)[1])
-    r1$Table_Name<-map_chr(r1$Table,function(x) cost.tableclass(x)[2])
-    
-    return(r1)
-    
-  }) %>% do.call(rbind,.)
-  
-  arr <-   cost.tabs.all %>% arrange(Table_Type,IDs) 
-  from<-  arr %>% filter(grepl("ID_T",IDs)) %>% mutate(ID_from=IDs) %>% select(-IDs)
-  to  <-   arr %>% filter(grepl("id_t",IDs)) %>% mutate(ID_to=IDs) %>% select(-IDs)
-  cost.tabs     <- left_join(from,to) %>% filter(Count>0)
-  cost.tabs$cost_id <- cost.tabs$ID_from %>% str_replace_all(.,"ID_T","") %>% as.numeric
-  cost.tabs<-cost.tabs %>% arrange(Table_Type,cost_id)
-  
-  return(cost.tabs)
-}
-
-
-#' Return the Metainformation stored in the first table
-#' The first COST Table (id_T1) is afterwards removed and the data
-#' grouped the final output folder too guarantee a right connection
-get.stat.meta<-function(con,tables){
-  
-  # Search for the first Table
-  begin<-tables %>% filter(ID_from=="ID_T1")
-  cf1.read<-dbGetQuery(con,statement=paste("select * from",begin$Table)) %>% as.tibble
-  
-  #' Search for the important information (RTM, DB, PROJECT etc.)
-  #' It is a Malab File -> Workaround
-  meta<-map_df(cf1.read$general_info,function(x){
-    
-    matall<-readMat(x)$data[,,1]
-    matall.rtm<-matall$rtm[,,1] %>% 
-      melt %>% 
-      select(Type=L1,Value=value) %>% 
-      filter(Type!="rtm") %>% t %>% as.tibble
-    colnames(matall.rtm)<-matall.rtm[1,]
-    matall.rtm<-matall.rtm %>% dplyr::select(database,project,id,date)
-    matall.rtm<-matall.rtm[-1,]
-    return(matall.rtm)
-    
-  })
-  
-  # Bind the results and rename the columns
-  cf1<- bind_cols(cf1.read,meta) %>% dplyr::select(-general_info)
-  colnames(cf1)<-c("ID_T1","Model","Database","Project","PY_ID","Date")
-  
-  return(cf1)
-}
-
-#' Extracts the value for all the COST Tables (beisides the first one, see above)
-#' Builds df returns from Blobs depending on the Column
-#' Joins all the MySQL Files to one table
-get.stat.metrics<-function(con,table,verbose=F){
-  
-  ##################################'
-  if(verbose==T) cat("Starting...")
-  lines<-str_detect(table$ID_to,"id_t[:digit:]") %>% which
-  if(length(lines)<1) return(NA)
-  cost.tabs.used<- table %>% slice(lines)
-  
-  tabs<-unique(cost.tabs.used$Table)
-  tabs.names<-unique(cost.tabs.used$Table_Name)
-  tabs.id<-unique(table$ID_T1)
-  
-  #################################'
-  if(verbose==T) cat("Reading...")
-  tabs.all<-map2(tabs,tabs.names,function(x,y,id=tabs.id){
-    
-    # No Donde and Cuando. Take too much space na dare not crucial
-    if(y!="noise") read<-dbGetQuery(con,statement=paste("select * from",x))
-    if(y=="noise") read<-dbGetQuery(con,statement=paste("select ID_T7,id_t6,noise from",x))
-    if(any(colnames(read)=="id_t1")) read<-filter(read,id_t1==id)
-    return(read)
-    
-  })
-  
-  #################################'
-  if(verbose==T) cat("Transforming...")
-  tabs.all2<-map(tabs.all,function(x){
-    
-    read<-as.tibble(x)
-    read<-costfun.spectros(read)
-    read<-costfun.param_user(read)
-    read<-costfun.lut(read)
-    read<-costfun.resultados(read)
-    return(read)
-    
-  })
-  
-  #################################'
-  if(verbose==T) cat("Joining...")
-  for(i in 2:length(tabs.all2)){
-    
-    if(i==2)  join<-.sqljoin(tabs.all2[[i-1]],tabs.all2[[i]])
-    if(i>2)   join<-.sqljoin(join,tabs.all2[[i]])
-    
-  }
-  
-  #################################'
-  if(verbose==T) cat("Formatting...\n")
-  join<-join %>% select(-contains("id_"))
-  return(join)
-}
-
-
-get.stat.artmo<-function(con){
-  
-  # Get all cost functions
-  costs.all<-get.stat.tab(con) %>% mutate(ID_costs=1:nrow(.))
-  
-  # Get Metainformation from cOST functions
-  costs.temp<-costs.all %>% group_by(Database,Table_Type) %>% nest
-  costs.meta<-costs.temp %>% 
-    mutate(costs=map(data,function(x,c=con) get.stat.meta(c,x))) %>% 
-    unnest(.preserve=data) %>% 
-    unnest 
-  
-  # Extract the actual Statistics for each Iteration
-  costs.nest<-costs.meta %>% 
-    group_by(Database,Model,Project,PY_ID,Date) %>% 
-    nest %>% 
-    mutate(Statistics=map2(data,Model,function(x,y,c=con) {
-      
-      print(paste("Process Statistics of Model:",y))
-      get.stat.metrics(c,x)
-      
-    })) %>% select(-data)
-  
-}
-
-# Table Layout
-
-export.lyt<-function(table,what="all"){
-  
-  if(what=="short") table<-table
-  if(what=="long")  table<-unnest(table)
-  if(what=="stat"){
-    
-    stats<-map(table$Statistics, function(x){
-      
-      x %>% dplyr::select(param_user,name_parameter,
-                          name_algoritmo,noise,
-                          me,rmse,relrmse,mae,r,r2,nrmse,ts,nse,tictoc,
-                          resultados)
-    })
-    
-    table$Statistics<-stats
-    
-  }
-  return(table)
-}
-
-
 
