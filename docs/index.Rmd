@@ -1,6 +1,5 @@
 ---
 title: "Home"
-output: html_document
 ---
 
 Work in progress -> Proceed to the Example Markdown
