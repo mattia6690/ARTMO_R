@@ -1,0 +1,11 @@
+name: "Site"
+author: Mattia Rossi
+output: html_document
+navbar:
+  title: "ARTMO R"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Example"
+      href: example.html
+
