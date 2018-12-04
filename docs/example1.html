@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Hands ON!</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ARTMO R</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="example1.html">Get ARTMO Data</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Hands ON!</h1>
+
+</div>
+
+
+<p>This site shows the basic appoach for accessing handling and aggrerating ARTMO Databases using ARTMO_R</p>
+<div id="essentials" class="section level1">
+<h1><span class="header-section-number">1</span> Essentials</h1>
+<p>This part of the code is necessary to set up the working environment. For easier debugging and testing of the various functions we subdivided them into several scripts.<br />
+* <strong>Essentials</strong>: Loads Packages as well as some crucial functions.<br />
+* <strong>MySQL</strong>: These functions deal with the MySQL backend. They grant access to the databases and extract overall values such as table names etc.<br />
+* <strong>Binary</strong>: Functions for the Conversion of the MySQL Binary Blob.<br />
+* <strong>Stats</strong>: Functions applied to several tables.This part has been most trick since each of the three approaches (MLA, VI, Inversion) is stored in a unique way containing Binary Blobs, Matlab objects and regular objects.</p>
+<p>The first step consits in loading the necessary functions and packages all specified in the following Scripts.</p>
+<pre class="r"><code>source(&quot;../R/Essentials.R&quot;)
+source(&quot;../R/Fun_MySQL.R&quot;)
+source(&quot;../R/Fun_Binary.R&quot;)
+source(&quot;../R/Fun_Stats_CF.R&quot;)
+source(&quot;../R/Fun_Stats_MLA.R&quot;)
+source(&quot;../R/Fun_Stats_VIs.R&quot;)
+source(&quot;../R/Fun_Stats_ALL.R&quot;)</code></pre>
+<p>If used in a script don’t forget to adjust the sources replacing <em>../</em></p>
+</div>
+<div id="connect" class="section level1">
+<h1><span class="header-section-number">2</span> Connect</h1>
+<p>Afterwards the connection credentials are necessary. Below you can see the standard MySQL credentials as descibed in the ARTMO manual.</p>
+<pre class="r"><code>user      &lt;- &quot;root&quot;
+host      &lt;- &quot;localhost&quot;
+password  &lt;- &quot;123456&quot;</code></pre>
+<p>The connection itself can be done in two ways. First to the overall MySQL without specification of a database in order to explore the available databases with <code>connect.raw</code>. Each Database is treated in its own and cannot be used together. If you wish to analyze all the databases at the same time you may need an additional for loop. This is discouraged due to the processing time necessary. If you have multiple databases on your MySQL you can briefly test whether the Database is an ARTMO Database with <code>is.artmodb</code>.</p>
+<pre class="r"><code>con.raw &lt;- connect.raw(user, password, host)
+is      &lt;- is.artmodb(con.raw, user, password, host)
+print(is)</code></pre>
+<pre><code>## [1] &quot;arb2018_n_vi&quot; &quot;artmo_1&quot;      &quot;test&quot;</code></pre>
+</div>
+<div id="select" class="section level1">
+<h1><span class="header-section-number">3</span> Select</h1>
+<p>The same is necessary for the database of interest. This is explicitly done with <code>connect.db</code></p>
+<pre class="r"><code>database  &lt;- is[2]
+con       &lt;- connect.db(user, password, host, database)
+summary(con)</code></pre>
+<pre><code>## MariaDBConnection 
+## host = localhost 
+## user = root 
+## dbname = artmo_1 
+## conType = localhost via TCP/IP 
+## serverVersion = 5.6.42-log 
+## protocolVersion = 10 
+## threadId = 1024 
+## client = 5.5.1</code></pre>
+<p>Once connected <code>get.tables.db</code> helps to explore the tables stored in the MySQL backend for the specific database. Here all the possible tables are displayed. The ones not containing any information have a count of 0 and will be discontinued in the next steps</p>
+<pre class="r"><code>db.tabs&lt;-get.tables.db(con)
+print(db.tabs)</code></pre>
+<pre><code>##                 Name  Rows Avg_row_length Data_length
+## 1   aux_prospect4_t2    20          33680      673600
+## 2       aux_sail4_t2 60000            240    14400000
+## 3             master    10           3328       33280
+## 4       prospect4_t1    20          21748      434976
+## 5       prospect4_t2  6090          33680   205111200
+## 6         s_sail4_t2 60229             43     2637824
+## 7           sail4_t1    40           2745      109800
+## 8           sail4_t2 81000            240    19480000
+## 9             sensor    16          36784      588660
+## 10      test_cf_alfa    26             15         390
+## 11 test_cf_algoritmo    26             42        1108
+## 12      test_cf_beta    26             15         390
+## 13     test_cf_class     6         974787     5848724
+## 14     test_cf_noise   105       10656057  1118885988
+## 15 test_cf_parameter     6           1296        7780
+## 16     test_cf_train   104           1116      116064
+## 17  test_inv_cf_ppal     7            498        3492
+## 18         vis_eq_t1     1            260         260
+## 19         vis_eq_t2     6             42         252
+## 20         vis_eq_t3    13            285        3705
+## 21            vis_t1     4            260        1040
+## 22            vis_t2    11             85         936
+## 23            vis_t3    24            534       12816</code></pre>
+</div>
+<div id="search-and-store" class="section level1">
+<h1><span class="header-section-number">4</span> Search and Store</h1>
+<p>Furthermore the most important part when dealing with MySQL - or basically with any SQL - code is to link the various tables one to the other. Due to the complexity of ARTMO each approach generates numerous tables, comprise several different data types and are linked in a sometimes inconsistent way to each other. Depending on the workflows more than 10 tables have to be recursively liked one to the other. The <code>getLinks</code> function resolves tackles this issue and finds the connection between tables</p>
+<pre class="r"><code>dblinks  &lt;- getLinks(con)
+print(dblinks)</code></pre>
+<pre><code>## # A tibble: 8 x 8
+##   Database Table             IDs   Count Table_Type Table_Name  Rank result
+##   &lt;chr&gt;    &lt;chr&gt;             &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;
+## 1 artmo_1  test_inv_cf_ppal  ID_T1     7 test_cf    ppal           1      0
+## 2 artmo_1  test_cf_class     ID_T2     6 test_cf    class          2      0
+## 3 artmo_1  test_cf_parameter ID_T3     6 test_cf    parameter      3      0
+## 4 artmo_1  test_cf_algoritmo ID_T4    26 test_cf    algoritmo      4      0
+## 5 artmo_1  test_cf_alfa      ID_T5    26 test_cf    alfa           5      0
+## 6 artmo_1  test_cf_beta      ID_T6    26 test_cf    beta           6      0
+## 7 artmo_1  test_cf_noise     ID_T7   105 test_cf    noise          7      0
+## 8 artmo_1  test_cf_train     ID_T8   104 test_cf    train          8      1</code></pre>
+<p>As you can see above each table contains one master ID that allows the link between the databases. Now all the data from each of the table has to be retrieved from the MySQL database. Hereby no information is written to the HD but everything remains in the RAM, so be aware that huge databases may cause <strong>Memoey Issues</strong>.</p>
+<pre class="r"><code>dbtabs   &lt;- getTabs(con,dblinks)</code></pre>
+<pre><code>## Warning in rep(., each = vsalidas): first element used of &#39;each&#39; argument</code></pre>
+<pre><code>## Warning in cbind(Spec_id, vsalidas.rep, spectral): number of rows of result
+## is not a multiple of vector length (arg 1)</code></pre>
+<pre class="r"><code>print(dbtabs)</code></pre>
+<pre><code>## # A tibble: 8 x 8
+##   Database Table_Type Table_Name Table       Rank Count result MyTables   
+##   &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;list&gt;     
+## 1 artmo_1  test_cf    ppal       test_inv_~     1     7      0 &lt;tibble [7~
+## 2 artmo_1  test_cf    class      test_cf_c~     2     6      0 &lt;tibble [6~
+## 3 artmo_1  test_cf    parameter  test_cf_p~     3     6      0 &lt;tibble [6~
+## 4 artmo_1  test_cf    algoritmo  test_cf_a~     4    26      0 &lt;tibble [2~
+## 5 artmo_1  test_cf    alfa       test_cf_a~     5    26      0 &lt;tibble [2~
+## 6 artmo_1  test_cf    beta       test_cf_b~     6    26      0 &lt;tibble [2~
+## 7 artmo_1  test_cf    noise      test_cf_n~     7   105      0 &lt;tibble [1~
+## 8 artmo_1  test_cf    train      test_cf_t~     8   104      1 &lt;tibble [1~</code></pre>
+<p>The data now is nested depending on the Table Type (which approach has been used). The <em>MyTable</em> colums contain all data retrieved in the MySQL database stored in lists of tibbles. The function <code>dplyr::unnest()</code> allows to reduce their dimensionality and explore in detail the single tables for each of the approaches. If we want to unravel the Table concerning the results of the Database we can use</p>
+<pre class="r"><code>table&lt;-dbtabs %&gt;% filter(Table_Name==&quot;train&quot;) %&gt;% select(MyTables) %&gt;% unnest
+print(table)</code></pre>
+<pre><code>## # A tibble: 104 x 16
+##    ID_T8 ID_T7 ID_T3 ID_TRAIN train      ME  RMSE RELRMSE   MAE     R    R2
+##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+##  1    10    10     1        1     1  0.101   1.77    70.6  1.22 0.423 0.179
+##  2    20    20     1        1     1 -0.434   2.20    87.6  1.61 0.439 0.193
+##  3    30    30     1        1     1  1.27    1.98    78.9  1.48 0.561 0.315
+##  4    40    40     1        1     1  0.0467  1.86    74.3  1.30 0.425 0.180
+##  5    50    50     2        1     1  0.222   1.66    66.2  1.19 0.562 0.316
+##  6    64    64     2        1     1 -0.0518  2.21    88.0  1.63 0.321 0.103
+##  7    84    84     2        1     1  0.349   1.63    65.0  1.17 0.539 0.291
+##  8     9     9     1        1     1  0.121   1.79    71.3  1.23 0.418 0.174
+##  9    19    19     1        1     1 -0.369   2.13    84.9  1.54 0.429 0.184
+## 10    29    29     1        1     1  1.31    2.00    79.8  1.50 0.572 0.327
+## # ... with 94 more rows, and 5 more variables: NRMSE &lt;dbl&gt;, TS &lt;dbl&gt;,
+## #   NSE &lt;dbl&gt;, tictoc &lt;dbl&gt;, resultados &lt;list&gt;</code></pre>
+</div>
+<div id="aggregate" class="section level1">
+<h1><span class="header-section-number">5</span> Aggregate</h1>
+<p>The nesting may has happened on multiple levels in the tibbles. This means that some of the lists contain lists. This level of complexitiy s necessary to reduce the amount of processing time as well as the RAM ressources. The <code>dbJoin</code> function helps to aggregate all the information based on the Table_Type column. The <em>MyTables</em> column is therefore recursively joined based on the unique identifiers</p>
+<pre class="r"><code>dbjoin   &lt;- doJoin(dbtabs,removeid = T)
+print(dbjoin)</code></pre>
+<pre><code>## # A tibble: 1 x 3
+##   Database Table_Type Metrics            
+##   &lt;chr&gt;    &lt;chr&gt;      &lt;list&gt;             
+## 1 artmo_1  test_cf    &lt;tibble [108 x 29]&gt;</code></pre>
+</div>
+<div id="exploration" class="section level1">
+<h1><span class="header-section-number">6</span> Exploration</h1>
+<p>Actually, this section is up to the next Part of this Website. Nonetheless here is the most common way to analyze one of the Table_Type aggregation. If the <code>dplyr::unnest</code> is used on single columns the MySQL result can be analyzed. <strong>NOTE</strong>: This won’t work for the complete tibble since they have different column names. It is recommended to either standardize or process them one by one.</p>
+<pre class="r"><code>statistics&lt;- dbjoin[1,] %&gt;% unnest</code></pre>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -4,7 +4,10 @@ navbar:
   left:
     - text: "Home"
       href: index.html
-    - text: "Example"
-      href: example.html
+    - text: "Get ARTMO Data"
+      href: example1.html
 
 output_dir: "."
+output:
+  html_document:
+    theme: cosmo

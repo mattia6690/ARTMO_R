@@ -1,5 +1,40 @@
 ---
 title: "Home"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
 ---
 
-Work in progress -> Proceed to the Example Markdown
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.pos = 'H')
+```
+
+# Background  
+
+A few months ago I started searching a software solution for predicting biophysical parameters for my PhD thesis. Especially biophysical parameters such as the LAI are interesting for my research. During the literature research i got more and more in contact with Prosail Radiative Transfer Models created exactly for the before mentioned purpose. [Several approaches](http://teledetection.ipgp.jussieu.fr/prosail/) have already been implemented in different programming languages in the past.
+
+One of them is the [ATMO Software](http://ipl.uv.es/artmo/). It allows to compute RTMs with several approaches as well as statistical evaluation making it a powerful tool for biophysical parameter retrieval. During my first tries with the ARTMO software I was impressed by the range of possibilities it provides to the user. It offers the assessment of biophysical parameters by means of Machine Learning Algorithms and a Look-up Table Inversion. At the same time it computes several Vegetation Indices (VIs) and allows a very deep and detailed parametrization as well as analysis. The last - and in my opinion - most interesting part is the application of the models to maps in order to create maps of e.g. LAI.
+
+# Motivation
+
+The more data and results I've generated, however, the more I got lost in the high amount of data and information generated. Especially when it came to comparing projects or models I had trouble to unify the data and evaluate the Model performance or parametrization without mixing things up. Also when adding maps to the workflow I ad some problems to the link them to the statics and parameters a-posteriori resulting in some confusion at the end of the analyses.
+
+At the same time I'm a huge supporter of open software solutions and started using R during my master thesis. Even though ARTMO is completely written in Matlab I noticed several possibilities where R could come in handy during the data analysis both as a connector to the MySQL back-end as well as the Spatial interpretation
+
+# Scope
+
+ARTMO_R is intended to ease the analysis of the Models generated with ARTMO. It is NOT intended to replace any core functionality of ARTMO. We are implementing function of tidying and cleaning the data and for creating a workflow for analyses with ARTMO. We are also developing possibilities to automatically generate ARTMO inputs (e.g. Validation Tables) and to include spatial analyses combining the ARTMO model statistics, generated maps as well as ground truth data.
+
+The following chart evidences schematically the way ARTMO_R is working within the ARTMO environment.
+![](./data/ARTMO2.png)
+
+# Status
+
+As for now, being under active development, the functions provided in this repository are not yet aggregated to a package but loose in several scripts. In future we could think about collecting the functions and built a package from them. Always depending on the real user interest. But first things first.  
+This code aims at explaining the central functions needed for the access to the back-end behind ARTMO in order to extract the most important variables and to combine the dispersed MYSQL tables in one single data frame. Therefore we used the [tibble](https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html) as well as the [tidyverse](https://www.tidyverse.org/) approach of a unified workflow. Since we have to deal with several thousands of data samples (depending on the database) the approach of utilizing nested tibbles turned out to be extremely useful especially when it came to heavy RAM usage.
+
+## Contact
+
+Any help or suggestions are absolutely welcome. Don't hesitate to contact me via mail (mattia.rossi@eurac.edu) or to open new issues in the Github Repository
