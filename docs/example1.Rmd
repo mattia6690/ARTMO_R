@@ -1,13 +1,15 @@
 ---
-title: "Hands ON!"
+title: "Get ARTMO Data"
+author: "Mattia Rossi"
 output:
   html_document:
     toc: true
     toc_float: true
     number_sections: true
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
-This site shows the basic approach for accessing handling and aggregating ARTMO Databases using ARTMO_R
+*This site shows the basic approach for accessing handling and aggregating ARTMO Databases using ARTMO_R*
 
 # Essentials
 
@@ -61,8 +63,6 @@ con       <- connect.db(user, password, host, database)
 summary(con)
 ```
 
-
-
 Once connected `get.tables.db` helps to explore the tables stored in the MySQL back-end for the specific database. Here all the possible tables are displayed. The ones not containing any information have a count of 0 and will be discontinued in the next steps
 
 ```{r, e1}
@@ -83,7 +83,7 @@ print(dblinks)
 
 As you can see above each table contains one master ID that allows the link between the databases. Now all the data from each of the table has to be retrieved from the MySQL database. Hereby no information is written to the HD but everything remains in the RAM, so be aware that huge databases may cause **Memory Issues**.
 
-```{r,e3,warnigns=FALSE,eval=F}
+```{r,e3,warnings=FALSE}
 dbtabs   <- getTabs(con,dblinks)
 print(dbtabs)
 ```

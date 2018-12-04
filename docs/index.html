@@ -9,9 +9,10 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="Mattia Rossi" />
 
 
-<title>Home</title>
+<title>About Artmo_R</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -296,34 +297,37 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Home</h1>
+<h1 class="title toc-ignore">About Artmo_R</h1>
+<h4 class="author"><em>Mattia Rossi</em></h4>
+<h4 class="date"><em>04 December, 2018</em></h4>
 
 </div>
 
 
 <div id="background" class="section level1">
 <h1><span class="header-section-number">1</span> Background</h1>
-<p>A few months ago I started searching a software solution for predicting biophysical parameters for my PhD thesis. Especially biophysical parameters such as the LAI are interesting for my research. During the literature research i got more and more in contact with Prosail Radiative Transfer Models created exactly for the beforementioned purpose. <a href="http://teledetection.ipgp.jussieu.fr/prosail/">Several approaches</a> have already been implemented in different programming languages in the past.</p>
-<p>One of them is the <a href="http://ipl.uv.es/artmo/">ATMO Software</a>. It allows to compute RTMs with several approaches as well as statistical evaluation making it a powerful tool for biophysical parameter retrieval. During my first tries with the ARTMO software I was impressed by the range of possibilities it provides to the user. It offers the assessment of biophysical parameters by means of Machine Learning Algorithms and a Lookup Table Inversion. At the same time it computes several Vegetation Indices (VIs) and allows a very deep and detailed parametrization as well as analysis. The last - and in my opinion - most interesting part is the application of the models to maps in order to create maps of e.g. LAI.</p>
+<p>A few months ago I started searching a software solution for predicting biophysical parameters for my PhD thesis. Especially biophysical parameters such as the LAI are interesting for my research. During the literature research i got more and more in contact with Prosail Radiative Transfer Models created exactly for the before mentioned purpose. <a href="http://teledetection.ipgp.jussieu.fr/prosail/">Several approaches</a> have already been implemented in different programming languages in the past.</p>
+<p>One of them is the <a href="http://ipl.uv.es/artmo/">ARTMO Software</a>. It allows to compute RTMs with several approaches as well as statistical evaluation making it a powerful tool for biophysical parameter retrieval. During my first tries with the ARTMO software I was impressed by the range of possibilities it provides to the user. It offers the assessment of biophysical parameters by means of Machine Learning Algorithms and a Look-up Table Inversion. At the same time it computes several Vegetation Indices (VIs) and allows a very deep and detailed parametrization as well as analysis. The last - and in my opinion - most interesting part is the application of the models to maps in order to create maps of e.g. LAI.</p>
 </div>
 <div id="motivation" class="section level1">
 <h1><span class="header-section-number">2</span> Motivation</h1>
-<p>The more data and results I’ve generated, however, the more I got lost in the high amount of data and information generated. Especially when it came to comparing projects or models I had trouble to unify the data and evaluate the Model performance or parametrization without mixing things up. Also when adding maps to the workflow I ad some problems to the link them to the statics and parameters a-posteriori resulting in some confusion at the end of the analyses.</p>
-<p>At the same time I’m a huge supporter of open software solutions and started using R during my master thesis. Even thougn ARTMO is completely written in Matlab I noticed several possibilities where R could come in handy during the data analysis both as a connector to the MySQL backend as well as the Spatial interpretation</p>
+<p>The more data and results I’ve generated, however, the more I got lost in the high amount of data and information generated. Especially when it came to comparing projects or models I had trouble to unify the data and evaluate the Model performance or parametrization without mixing things up. Also when adding maps to the workflow I had some problems to link them to the statics and parameters a-posteriori, resulting in some confusion at the end of the analyses.</p>
+<p>At the same time I’m a huge supporter of open software solutions and started using R during my master thesis a few years ago. Even though ARTMO is completely written in Matlab I noticed several possibilities where R could come in handy during the data analysis. R is able to act both as a connector to the MySQL back-end as well as for Spatial interpretation.</p>
+<p>These reasons pushed me to create an R-environment able to deal with the Results poduced by the ARTMO software.</p>
 </div>
 <div id="scope" class="section level1">
 <h1><span class="header-section-number">3</span> Scope</h1>
-<p>ARTMO_R is intended to easen the analysis of the Models generated with ARTMO. It is NOT intended to replace any core functionality of ARTMO. We are implementing function fo tidying and cleaning the data and for creating a workflow for analyses with ARTMO. We are also developing possibilies to automatically generate ARTMO inputs (e.g. Validation Tables) and to include spatial analyses combining the ARTMO model statistics, generated maps as well as ground truth data.</p>
+<p>ARTMO_R is intended to ease the analysis of the models generated with ARTMO. It is NOT intended to replace any core functionality of ARTMO. We are implementing functions for tidying and cleaning the data and for creating a workflow for analyses with ARTMO. We are also developing possibilities to automatically generate ARTMO inputs (e.g. Validation Tables) and to include spatial analyses combining the ARTMO model statistics, generated maps as well as ground truth data.</p>
 <p>The following chart evidences schematically the way ARTMO_R is working within the ARTMO environment. <img src="data/ARTMO2.png" /></p>
 </div>
 <div id="status" class="section level1">
 <h1><span class="header-section-number">4</span> Status</h1>
-<p>As for now, being under active development, the functions provided in this repositoy are not yet aggregated to a package but loose in several scripts. In future we could think about collecting the functions and built a package from them. Always depending on the real user interest. But first things first.<br />
-This code aims at explaining the central functions needed for the access to the backend behind ARTMO in order to extact the most important variables and to combine the dispersed MYSQL tables in one single data frame. Therefore we used the <a href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html">tibble</a> as well as the <a href="https://www.tidyverse.org/">tidyverse</a> approach fo a unified workflow. Since we have to deal with several thousands of data samples (depending on the database) the approach of utilizing nested tibbles turned out to be extremely useful especially when it came to heavy RAM usage.</p>
-<div id="contact" class="section level2">
-<h2><span class="header-section-number">4.1</span> Contact</h2>
-<p>Any help or suggestions are absolutely welcome. Don’t hesitate to contact me via mail (<a href="mailto:mattia.rossi@eurac.edu">mattia.rossi@eurac.edu</a>) or to open new issues in the Github Repository</p>
+<p>As for now, being under active development, the functions provided in this repository are not yet aggregated to a package but loose in several scripts. In future we could think about collecting the functions and built a package from them. Always depending on the real user interest. But first things first.<br />
+This code aims at explaining the central functions needed for the access to the back-end behind ARTMO in order to extract the most important variables and to combine the dispersed MYSQL tables in one single data frame. Therefore we used the <a href="https://cran.r-project.org/web/packages/tibble/vignettes/tibble.html">tibble</a> as well as the <a href="https://www.tidyverse.org/">tidyverse</a> approach of a unified workflow. Since we have to deal with several thousands of data samples (depending on the database) the approach of utilizing nested tibbles turned out to be extremely useful especially when it came to heavy RAM usage.</p>
 </div>
+<div id="contact" class="section level1">
+<h1><span class="header-section-number">5</span> Contact</h1>
+<p>Any help or suggestions are absolutely appreciated. Don’t hesitate to contact me via mail (<a href="mailto:mattia.rossi@eurac.edu">mattia.rossi@eurac.edu</a>) or to open new issues in the Github Repository</p>
 </div>
 
 

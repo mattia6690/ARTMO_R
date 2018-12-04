@@ -6,6 +6,8 @@ navbar:
       href: index.html
     - text: "Get ARTMO Data"
       href: example1.html
+    - text: "Changelog"
+      href: changelog.html
 
 output_dir: "."
 output:

@@ -9,9 +9,10 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="Mattia Rossi" />
 
 
-<title>Hands ON!</title>
+<title>Get ARTMO Data</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -296,20 +297,22 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Hands ON!</h1>
+<h1 class="title toc-ignore">Get ARTMO Data</h1>
+<h4 class="author"><em>Mattia Rossi</em></h4>
+<h4 class="date"><em>04 December, 2018</em></h4>
 
 </div>
 
 
-<p>This site shows the basic appoach for accessing handling and aggrerating ARTMO Databases using ARTMO_R</p>
+<p><em>This site shows the basic approach for accessing handling and aggregating ARTMO Databases using ARTMO_R</em></p>
 <div id="essentials" class="section level1">
 <h1><span class="header-section-number">1</span> Essentials</h1>
 <p>This part of the code is necessary to set up the working environment. For easier debugging and testing of the various functions we subdivided them into several scripts.<br />
 * <strong>Essentials</strong>: Loads Packages as well as some crucial functions.<br />
-* <strong>MySQL</strong>: These functions deal with the MySQL backend. They grant access to the databases and extract overall values such as table names etc.<br />
+* <strong>MySQL</strong>: These functions deal with the MySQL back-end. They grant access to the databases and extract overall values such as table names etc.<br />
 * <strong>Binary</strong>: Functions for the Conversion of the MySQL Binary Blob.<br />
 * <strong>Stats</strong>: Functions applied to several tables.This part has been most trick since each of the three approaches (MLA, VI, Inversion) is stored in a unique way containing Binary Blobs, Matlab objects and regular objects.</p>
-<p>The first step consits in loading the necessary functions and packages all specified in the following Scripts.</p>
+<p>The first step consists in loading the necessary functions and packages all specified in the following Scripts.</p>
 <pre class="r"><code>source(&quot;../R/Essentials.R&quot;)
 source(&quot;../R/Fun_MySQL.R&quot;)
 source(&quot;../R/Fun_Binary.R&quot;)
@@ -321,7 +324,7 @@ source(&quot;../R/Fun_Stats_ALL.R&quot;)</code></pre>
 </div>
 <div id="connect" class="section level1">
 <h1><span class="header-section-number">2</span> Connect</h1>
-<p>Afterwards the connection credentials are necessary. Below you can see the standard MySQL credentials as descibed in the ARTMO manual.</p>
+<p>Afterwards the connection credentials are necessary. Below you can see the standard MySQL credentials as described in the ARTMO manual.</p>
 <pre class="r"><code>user      &lt;- &quot;root&quot;
 host      &lt;- &quot;localhost&quot;
 password  &lt;- &quot;123456&quot;</code></pre>
@@ -344,9 +347,9 @@ summary(con)</code></pre>
 ## conType = localhost via TCP/IP 
 ## serverVersion = 5.6.42-log 
 ## protocolVersion = 10 
-## threadId = 1024 
+## threadId = 1104 
 ## client = 5.5.1</code></pre>
-<p>Once connected <code>get.tables.db</code> helps to explore the tables stored in the MySQL backend for the specific database. Here all the possible tables are displayed. The ones not containing any information have a count of 0 and will be discontinued in the next steps</p>
+<p>Once connected <code>get.tables.db</code> helps to explore the tables stored in the MySQL back-end for the specific database. Here all the possible tables are displayed. The ones not containing any information have a count of 0 and will be discontinued in the next steps</p>
 <pre class="r"><code>db.tabs&lt;-get.tables.db(con)
 print(db.tabs)</code></pre>
 <pre><code>##                 Name  Rows Avg_row_length Data_length
@@ -390,7 +393,7 @@ print(dblinks)</code></pre>
 ## 6 artmo_1  test_cf_beta      ID_T6    26 test_cf    beta           6      0
 ## 7 artmo_1  test_cf_noise     ID_T7   105 test_cf    noise          7      0
 ## 8 artmo_1  test_cf_train     ID_T8   104 test_cf    train          8      1</code></pre>
-<p>As you can see above each table contains one master ID that allows the link between the databases. Now all the data from each of the table has to be retrieved from the MySQL database. Hereby no information is written to the HD but everything remains in the RAM, so be aware that huge databases may cause <strong>Memoey Issues</strong>.</p>
+<p>As you can see above each table contains one master ID that allows the link between the databases. Now all the data from each of the table has to be retrieved from the MySQL database. Hereby no information is written to the HD but everything remains in the RAM, so be aware that huge databases may cause <strong>Memory Issues</strong>.</p>
 <pre class="r"><code>dbtabs   &lt;- getTabs(con,dblinks)</code></pre>
 <pre><code>## Warning in rep(., each = vsalidas): first element used of &#39;each&#39; argument</code></pre>
 <pre><code>## Warning in cbind(Spec_id, vsalidas.rep, spectral): number of rows of result
@@ -407,7 +410,7 @@ print(dblinks)</code></pre>
 ## 6 artmo_1  test_cf    beta       test_cf_b~     6    26      0 &lt;tibble [2~
 ## 7 artmo_1  test_cf    noise      test_cf_n~     7   105      0 &lt;tibble [1~
 ## 8 artmo_1  test_cf    train      test_cf_t~     8   104      1 &lt;tibble [1~</code></pre>
-<p>The data now is nested depending on the Table Type (which approach has been used). The <em>MyTable</em> colums contain all data retrieved in the MySQL database stored in lists of tibbles. The function <code>dplyr::unnest()</code> allows to reduce their dimensionality and explore in detail the single tables for each of the approaches. If we want to unravel the Table concerning the results of the Database we can use</p>
+<p>The data now is nested depending on the Table Type (which approach has been used). The <em>MyTable</em> columns contain all data retrieved in the MySQL database stored in lists of tibbles. The function <code>dplyr::unnest()</code> allows to reduce their dimensionality and explore in detail the single tables for each of the approaches. If we want to unravel the Table concerning the results of the Database we can use</p>
 <pre class="r"><code>table&lt;-dbtabs %&gt;% filter(Table_Name==&quot;train&quot;) %&gt;% select(MyTables) %&gt;% unnest
 print(table)</code></pre>
 <pre><code>## # A tibble: 104 x 16
@@ -428,7 +431,7 @@ print(table)</code></pre>
 </div>
 <div id="aggregate" class="section level1">
 <h1><span class="header-section-number">5</span> Aggregate</h1>
-<p>The nesting may has happened on multiple levels in the tibbles. This means that some of the lists contain lists. This level of complexitiy s necessary to reduce the amount of processing time as well as the RAM ressources. The <code>dbJoin</code> function helps to aggregate all the information based on the Table_Type column. The <em>MyTables</em> column is therefore recursively joined based on the unique identifiers</p>
+<p>The nesting may has happened on multiple levels in the tibbles. This means that some of the lists contain lists. This level of complexity s necessary to reduce the amount of processing time as well as the RAM resources. The <code>dbJoin</code> function helps to aggregate all the information based on the Table_Type column. The <em>MyTables</em> column is therefore recursively joined based on the unique identifiers</p>
 <pre class="r"><code>dbjoin   &lt;- doJoin(dbtabs,removeid = T)
 print(dbjoin)</code></pre>
 <pre><code>## # A tibble: 1 x 3
@@ -438,8 +441,29 @@ print(dbjoin)</code></pre>
 </div>
 <div id="exploration" class="section level1">
 <h1><span class="header-section-number">6</span> Exploration</h1>
-<p>Actually, this section is up to the next Part of this Website. Nonetheless here is the most common way to analyze one of the Table_Type aggregation. If the <code>dplyr::unnest</code> is used on single columns the MySQL result can be analyzed. <strong>NOTE</strong>: This won’t work for the complete tibble since they have different column names. It is recommended to either standardize or process them one by one.</p>
-<pre class="r"><code>statistics&lt;- dbjoin[1,] %&gt;% unnest</code></pre>
+<p>Actually, this section is up to the next Part of this Website. Nonetheless here is the most common way to analyze one of the Table_Type aggregation. If the <code>dplyr::unnest</code> is used on single columns the MySQL result can be analyzed.</p>
+<p><strong>NOTE</strong>: This won’t work for the complete tibble since they have different column names. It is recommended to either standardize or process them one by one.</p>
+<pre class="r"><code>statistics&lt;- dbjoin[1,] %&gt;% unnest
+print(statistics)</code></pre>
+<pre><code>## # A tibble: 108 x 31
+##    Database Table_Type test_name general_info name_class derivar size_data
+##    &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;     &lt;list&gt;       &lt;chr&gt;        &lt;int&gt; &lt;S3: int&gt;
+##  1 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
+##  2 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
+##  3 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
+##  4 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
+##  5 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
+##  6 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
+##  7 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
+##  8 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
+##  9 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
+## 10 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
+## # ... with 98 more rows, and 24 more variables: estadistico &lt;int&gt;,
+## #   spectros_user &lt;list&gt;, lut &lt;list&gt;, name_parameter &lt;chr&gt;, clave &lt;chr&gt;,
+## #   param_user &lt;list&gt;, name_algoritmo &lt;chr&gt;, normalizar &lt;int&gt;, sim &lt;S3:
+## #   integer64&gt;, alfa &lt;dbl&gt;, beta &lt;dbl&gt;, noise &lt;dbl&gt;, train &lt;dbl&gt;,
+## #   ME &lt;dbl&gt;, RMSE &lt;dbl&gt;, RELRMSE &lt;dbl&gt;, MAE &lt;dbl&gt;, R &lt;dbl&gt;, R2 &lt;dbl&gt;,
+## #   NRMSE &lt;dbl&gt;, TS &lt;dbl&gt;, NSE &lt;dbl&gt;, tictoc &lt;dbl&gt;, resultados &lt;list&gt;</code></pre>
 </div>
 
 

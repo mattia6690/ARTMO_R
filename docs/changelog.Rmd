@@ -1,0 +1,8 @@
+---
+title: "Changelog"
+output: html_document
+---
+
+## v 0.1
+*04.12.18*  
+First stable environment. Functions for extracting all approaches ready as documented in **Get ARTMO Data**
