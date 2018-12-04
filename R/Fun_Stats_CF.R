@@ -1,6 +1,4 @@
 
-source("R/Fun_Binary.R")
-
 # General -----------------------------------
 # Create the Real names and Type of Table. Somehow the Fist CF Table has an INV in between
 cost.tableclass<-function(x){
@@ -114,16 +112,4 @@ cost.tableclass<-function(x){
   out<-table %>% mutate(resultados=numbs)
   return(out)
 }
-  
-#   
-#   istab<-any(names(table)=="resultados")
-#   if(isTRUE(istab) ){
-#     
-#     raws<-table$resultados
-#     numbs<-map(raws,function(x) rawTrans(x)$numbers)
-#     out<-table %>% mutate(resultados=numbs)
-#     
-#     return(out)
-#   } else {return(table)}
-# }
 
