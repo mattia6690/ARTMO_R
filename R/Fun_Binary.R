@@ -2,7 +2,6 @@
 
 rawTrans<-function(input){
   
-  ref<-read.table("data/Datatypes.txt",sep=" ") %>% setNames(c("ID","Bits","Name"))
   ref<-suppressMessages(read_csv("data/Datatypes.csv"))
   
   #Check the Format
