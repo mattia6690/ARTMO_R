@@ -47,11 +47,13 @@
 .vi.bandas<-function(tab){
   
   tab2<-tab %>% 
-    mutate(bandas=map(bandas,function(x){
+    mutate(Bands=map(bandas,function(x){
       
       gt<-rawTrans(x)$numbers %>% unlist(use.names = F) 
       
     }))
+  
+  tab2<-tab2 %>% select(-bandas)
   
   return(tab2) 
   
