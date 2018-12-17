@@ -5,6 +5,19 @@
 #' 
 ################################'
 
+# Format the Result to a tidy version:
+# Statistics in one Column and Value representing the Value for each Statistics
+FormatTidy<-function(jtable,what="CF"){
+  
+  tab<-jtable %>% 
+    dplyr::filter(!is.na(R2)) %>% 
+    tidyr::gather(.,key=Statistic,value=Value,ME,RMSE,RELRMSE,MAE,R,R2,NRMSE,NSE)
+  
+  return(tab)
+  
+}
+
+
 # Explore the Specral Information
 explore.spectral<-function(model,costs,colpal=NULL){
   
