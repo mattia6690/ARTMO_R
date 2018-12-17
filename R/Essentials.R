@@ -38,5 +38,34 @@ r2.equation = function(x) {
   as.character(as.expression(lm_eq))
 }
 
+# Lists the Models per Table_Type as well as the Path
+# If foldersetup is true the Folders will automatically be generated
+buildpath<-function(dbjoin,dir="",foldersetup=F){
+  
+  db1<-dbjoin %>% 
+    mutate(Dir=pmap(.,function(...){
+    
+    #met<-Metrics[[1]]
+    gl<-glue("{dir}/{Database}/{Table_Type}/{Metrics[[1]]$Model}/")
+    return(as.character(gl))
+    
+  }))
+  
+  db2<-db1 %>% select(-Metrics) %>% unnest %>% unique
+  
+  if(foldersetup==T) map(db1$Dir,dircheckup)
 
+  return(db2)
+}
 
+# Format the Result to a tidy version:
+# Statistics in one Column and Value representing the Value for each Statistics
+FormatTidy<-function(jtable,what="CF"){
+  
+  tab<-jtable %>% 
+    dplyr::filter(!is.na(R2)) %>% 
+    tidyr::gather(.,key=Statistic,value=Value,ME,RMSE,RELRMSE,MAE,R,R2,NRMSE,NSE)
+  
+  return(tab)
+  
+}
