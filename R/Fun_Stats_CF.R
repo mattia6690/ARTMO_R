@@ -24,13 +24,13 @@ cost.tableclass<-function(x){
     matall.rtm<-matall.rtm %>% dplyr::select(database,project,id,date)
     matall.rtm<-matall.rtm[-1,]
     colnames(matall.rtm)<-c("Database","Project","PY_ID","Date")
-    matall.rtm<-as.tibble(matall.rtm)
+    matall.rtm<-as.tibble(matall.rtm) 
     
     return(matall.rtm)
     
   })
   
-  out <-table %>% select(-general_info) %>% mutate(general_info=mapper)
+  out <-table %>% mutate(general_info=mapper) %>% unnest %>% rename(Model=test_name)
   return(out)
   
 }
@@ -67,7 +67,7 @@ cost.tableclass<-function(x){
     
   })
   
-  out <-table %>% select(-spectros_user) %>% mutate(spectros_user=mapper)
+  out <-table %>% select(-spectros_user) %>% mutate(Spectra=mapper)
   return(out)
 }
 
@@ -97,7 +97,7 @@ cost.tableclass<-function(x){
       list
     
     master$LUT<-lut
-    out <-table %>% select(-lut) %>% mutate(lut=list(master))
+    out <-table %>% select(-lut) %>% mutate(LUT=list(master))
     #id.mod  <-lut["id.modelo",,1] %>% bind_cols %>% unnest %>% list
     #out <-table %>% select(-lut) %>% mutate(lut=list(master))
     
@@ -108,8 +108,14 @@ cost.tableclass<-function(x){
 .cf.resultados<-function(table){
   
   raws<-table$resultados
-  numbs<-map(raws,function(x) rawTrans(x)$numbers)
-  out<-table %>% mutate(resultados=numbs)
+  numbs<-map(raws,function(x) {
+    res<-rawTrans(x)$numbers %>% 
+      matrix(., ncol=2) %>% 
+      as.tibble %>% 
+      setNames(c("Measured","Estimated"))
+  })
+  
+  out<-table %>% mutate(Results=numbs) %>% select(-resultados)
   return(out)
 }
 
