@@ -52,69 +52,72 @@ getTabs<-function(con,links){
   toload<-links %>% select(Database,Table_Type,Table_Name,Table,Rank,Count,result)
   
   stat.tabs<-toload %>% 
-    mutate(MyTables=purrr::map2(Table_Type,Table,function(type,x){
+    mutate(MyTables=pmap(.,function(...,Table_Type,Table,result){
+    
+    #' Machine Learning
+    if(Table_Type=="test_mla"){
       
-      #' Machine Learning
-      if(type=="test_mla"){
+      # Read Table
+      tab<-dbGetQuery(con,glue("select * from {Table}"))
+      tabn<-colnames(tab)
+      
+      # Transform Column Values
+      tab<-as.tibble(tab)
+      if(any(tabn=="wl"))     tab<-.mlr.wl(tab)
+      if(any(tabn=="plotcv")) tab<-.mlr.plotcv(tab)
+      if(any(tabn=="staticscv")) tab<-.mlr.staticscv(tab)
+      
+      # Delete Columns
+      if(any(tabn=="mla_settigs"))  tab<-tab %>% select(-"mla_settigs")
+      if(any(tabn=="general_info")) tab<-tab %>% select(-"general_info")
+    }
+    
+    #' Lookup Table Inversion
+    if(Table_Type=="test_cf"){
+      
+      # Read Table
+      isnoise<- any(grepl("noise",Table))
+      if(isnoise==F) tab<-dbGetQuery(con,glue("select * from {Table}"))
+      if(isnoise==T) tab<-dbGetQuery(con,glue("select ID_T7,id_t6,noise from {Table}"))
+      tabn<-colnames(tab)
+      
+      # Transform Columns
+      tab<-as.tibble(tab)
+      if(any(tabn=="general_info")) tab<-.cf.generalinfo(tab)
+      if(any(tabn=="spectros_user"))tab<-.cf.spectros(tab)
+      if(any(tabn=="param_user"))   tab<-.cf.paramuser(tab)
+      if(any(tabn=="lut"))          tab<-.cf.lut(tab)
+      if(any(tabn=="resultados"))   tab<-.cf.resultados(tab)
+      
+      # Rename Columns
+      if(any(tabn=="name_parameter")) tab<-tab %>% separate(name_parameter,into=c("Name1","Name2"),sep=":")
+      if(any(tabn=="name_algoritmo")) tab<-tab %>% rename(algorithm=name_algoritmo) 
         
-        # Read Table
-        tab<-dbGetQuery(con,glue("select * from {x}"))
+    }
+    
+    #' Indices (In the Pipeline, too big to join for now -> Reduce dimensionality?)
+    if(Table_Type=="vis_test") {
+      
+      if(result==1){
+        
+        get<-"ID_T10,id_t9,bands,bands1,parametros,parametros1,ME,RMSE,RELRMSE,MAE,R,R2,NRMSE,TS,NSE"
+        tab<-dbGetQuery(con,glue("select {get} from {Table}")) %>% as.tibble
+        
+      } else {
+        
+        tab<-dbGetQuery(con,glue("select * from {Table}")) %>% as.tibble
         tabn<-colnames(tab)
         
-        # Transform Column Values
-        tab<-as.tibble(tab)
-        if(any(tabn=="wl"))     tab<-.mlr.wl(tab)
-        if(any(tabn=="plotcv")) tab<-.mlr.plotcv(tab)
-        if(any(tabn=="statcv")) tab<-.mlr.staticscv(tab)
-        
-        # Delete Columns
-        if(any(tabn=="mla_settigs"))  tab<-tab %>% select(-"mla_settigs")
-        if(any(tabn=="general_info")) tab<-tab %>% select(-"general_info")
-      }
-      
-      #' Lookup Table Inversion
-      if(type=="test_cf"){
-        
-        # Read Table
-        isnoise<- any(grepl("noise",x))
-        if(isnoise==F) tab<-dbGetQuery(con,glue("select * from {x}"))
-        if(isnoise==T) tab<-dbGetQuery(con,glue("select ID_T7,id_t6,noise from {x}"))
-        tabn<-colnames(tab)
-        
-        # Transform Columns
-        tab<-as.tibble(tab)
-        if(any(tabn=="general_info")) tab<-.cf.generalinfo(tab)
-        if(any(tabn=="spectros_user"))tab<-.cf.spectros(tab)
-        if(any(tabn=="param_user"))   tab<-.cf.paramuser(tab)
-        if(any(tabn=="lut"))          tab<-.cf.lut(tab)
-        if(any(tabn=="resultados"))   tab<-.cf.resultados(tab)
+        if(any(tabn=="general_info")) tab<-.vi.general(tab)
+        if(any(tabn=="data")) tab<-.vi.class(tab)
+        if(any(tabn=="bandas")) tab<-.vi.bandas(tab)
+        if(any(tabn=="indices")) tab<-.vi.indices(tab)
         
       }
-      
-      #' Indices (In the Pipeline, too big to join for now -> Reduce dimensionality?)
-      if(type=="vis_test") {
-        
-        result<-c("vis_test_test","vis_test_valid")
-        
-        if(x %in% result){
-          
-          get<-"ID_T10,id_t9,bands,bands1,parametros,parametros1,ME,RMSE,RELRMSE,MAE,R,R2,NRMSE,TS,NSE"
-          tab<-dbGetQuery(con,glue("select {get} from {x}")) %>% as.tibble
-          
-        } else {
-          
-          tab<-dbGetQuery(con,glue("select * from {x}")) %>% as.tibble
-          tabn<-colnames(tab)
-          
-          if(any(tabn=="general_info")) tab<-.vi.general(tab)
-          if(any(tabn=="data")) tab<-.vi.class(tab)
-          if(any(tabn=="bandas")) tab<-.vi.bandas(tab)
-          if(any(tabn=="indices")) tab<-.vi.indices(tab)
-          
-        }
-      }
-      
-      return(tab)
+    }
+    
+    return(tab)
+    
     }))
   
   nulls<-map(stat.tabs$MyTables,is.null) %>% unlist
@@ -129,10 +132,10 @@ doJoin<-function(tabs,removeid=F){
   
   # Group and perform operation by Table Type (each class single)
   t1<-tabs %>% group_by(Database,Table_Type) %>% nest
-  t2<-t1 %>% mutate(Metrics=map(data,function(x){
+  t2<-t1 %>% mutate(Metrics=pmap(.,function(...){
     
     # Join all the Metainformation
-    meta<- x %>% filter(result==0)
+    meta<- data[[1]] %>% filter(result==0)
     
     if(nrow(meta)>0){
       
@@ -147,7 +150,7 @@ doJoin<-function(tabs,removeid=F){
     } else {tib.meta<-NA}
     
     # Join all the Results
-    result<- x %>% filter(result==1)
+    result<- data[[1]] %>% filter(result==1)
     
     if(nrow(result)>0){
       
@@ -160,7 +163,12 @@ doJoin<-function(tabs,removeid=F){
     if(!is.na(tib.meta) && is.na(tib.res)) out<-tib.meta
     if(!is.na(tib.meta) && !is.na(tib.res)) out<-left_join(tib.meta,tib.res)
     
+    
     if(removeid==T) out<-.removeid(out)
+    
+    out$Store.ID<-seq(1:nrow(out))
+    out$Database<-Database
+    out$Table_Type<-Table_Type
     return(out)
     
   }))
