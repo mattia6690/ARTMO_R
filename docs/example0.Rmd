@@ -3,7 +3,6 @@ title: "Input Generation"
 author: "Mattia Rossi"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-
   html_document:
     number_sections: yes
     toc: yes
