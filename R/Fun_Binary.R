@@ -10,12 +10,11 @@ rawTrans<-function(input){
   
   # Analyze the Content
   row   <- filter(ref,ID==format[1])
-  
   number.raw<- input[13:length(input)]
-  max <- row$Bits*2
-  x <- seq_along(number.raw)
-  d1 <- split(number.raw, ceiling(x/max))
-  numbers<-map_dbl(d1,function(x) readBin(x,what="numeric",size=row$Bits))
+  
+  bits<- row$Bits
+  n1  <- length(number.raw)/bits
+  numbers<-readBin(number.raw,what="numeric",size=bits,n=n1)
   
   tst<-list()
   tst$datatype  <- format
