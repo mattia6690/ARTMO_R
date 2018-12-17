@@ -1,0 +1,60 @@
+---
+title: "Input Generation"
+author: "Mattia Rossi"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+
+  html_document:
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+---
+
+*This Tutorial shows interesting functions for dealing with preprocessing problems in ARTMO*
+
+# Validation Table
+
+The Validation Table is crucial when validating the simulated Results to the measured samples. ARTMO requires this Table for the LUT. It requires to have the first Line(s) containing the measured value you want to model (e.g. LAI, Angle, Chlorophyll etc). The following rows are then reserved for the Spectral signatures. The exact location of the spectral information as well as the measured variable is specified in ARTMO.
+
+Assuming that you have a tidy dataframe as the following:
+```{r,echo=F,warning=FALSE,message=FALSE}
+
+source("../R/Essentials.R")
+import<-readRDS("U:/S2_LAI/R_Objects/ExtractionList_280918.rds")
+input.cols<-c("LAI","MTA","Sunzenith")
+spectral.col<-"S.Band_"
+
+artmo<-import %>% 
+  dplyr::select(.,Station,OP1,Date,one_of(input.cols),contains(spectral.col))
+
+```
+
+```{r}
+artmo
+```
+
+
+with the following columns:  
+* **Station** and **OP1** are spatial locations and sub location  
+* **Date** the Date of the acquisition  
+* **LAI, MTA, Sunzenith** the variables for the Model  
+* The following columns contain the **reflectance value** as detected by Sentinel-2 sensors with the Prefix *S_Band_*.
+
+The measured Variables in this case are LAI, MTA and the solar zenith angle. The response are the reflectance values as collected by Sentinel-2 MSI.
+In order to retain the proper format we have to apply the following code reducing and reversing the Code.
+
+```{r}
+
+artmo1<-artmo %>% 
+  group_by(Station,Date,OP1) %>% 
+  nest
+
+cnames<-artmo1$data[[1]] %>% colnames
+
+artmo2<- map(artmo1$data,t) 
+artmo3<- do.call(cbind,artmo2)
+artmo4<- cbind(cnames,artmo3) %>% as.tibble
+
+print(artmo4)
+```
+

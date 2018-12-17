@@ -4,8 +4,14 @@ navbar:
   left:
     - text: "Home"
       href: index.html
-    - text: "Get ARTMO Data"
+    - text: "Getting Started"
+      href: example0.html
+    - text: "Get Data"
       href: example1.html
+    - text: "Explore Databases"
+      href: example2.html
+    - text: "Spatial Link"
+      href: example3.html
     - text: "Changelog"
       href: changelog.html
 

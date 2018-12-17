@@ -283,7 +283,16 @@ div.tocify {
   <a href="index.html">Home</a>
 </li>
 <li>
-  <a href="example1.html">Get ARTMO Data</a>
+  <a href="example0.html">Getting Started</a>
+</li>
+<li>
+  <a href="example1.html">Get Data</a>
+</li>
+<li>
+  <a href="example2.html">Explore Databases</a>
+</li>
+<li>
+  <a href="example3.html">Spatial Link</a>
 </li>
 <li>
   <a href="changelog.html">Changelog</a>
@@ -302,7 +311,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Get ARTMO Data</h1>
 <h4 class="author"><em>Mattia Rossi</em></h4>
-<h4 class="date"><em>04 December, 2018</em></h4>
+<h4 class="date"><em>17 December, 2018</em></h4>
 
 </div>
 
@@ -350,29 +359,29 @@ summary(con)</code></pre>
 ## conType = localhost via TCP/IP 
 ## serverVersion = 5.6.42-log 
 ## protocolVersion = 10 
-## threadId = 1134 
+## threadId = 1526 
 ## client = 5.5.1</code></pre>
 <p>Once connected <code>get.tables.db</code> helps to explore the tables stored in the MySQL back-end for the specific database. Here all the possible tables are displayed. The ones not containing any information have a count of 0 and will be discontinued in the next steps</p>
 <pre class="r"><code>db.tabs&lt;-get.tables.db(con)
 print(db.tabs)</code></pre>
 <pre><code>##                 Name  Rows Avg_row_length Data_length
 ## 1   aux_prospect4_t2    20          33680      673600
-## 2       aux_sail4_t2 60000            240    14400000
+## 2       aux_sail4_t2 10000            240     2400000
 ## 3             master    10           3328       33280
 ## 4       prospect4_t1    20          21748      434976
 ## 5       prospect4_t2  6090          33680   205111200
-## 6         s_sail4_t2 60229             43     2637824
+## 6         s_sail4_t2  9980             34      344064
 ## 7           sail4_t1    40           2745      109800
 ## 8           sail4_t2 81000            240    19480000
 ## 9             sensor    16          36784      588660
-## 10      test_cf_alfa    26             15         390
-## 11 test_cf_algoritmo    26             42        1108
-## 12      test_cf_beta    26             15         390
-## 13     test_cf_class     6         974787     5848724
-## 14     test_cf_noise   105       10656057  1118885988
-## 15 test_cf_parameter     6           1296        7780
-## 16     test_cf_train   104           1116      116064
-## 17  test_inv_cf_ppal     7            498        3492
+## 10      test_cf_alfa    33             15         495
+## 11 test_cf_algoritmo    33             42        1400
+## 12      test_cf_beta    33             15         495
+## 13     test_cf_class     7         847740     5934184
+## 14     test_cf_noise   126        9048056  1140055080
+## 15 test_cf_parameter     7           1296        9076
+## 16     test_cf_train   125           1116      139500
+## 17  test_inv_cf_ppal     8            498        3988
 ## 18         vis_eq_t1     1            260         260
 ## 19         vis_eq_t2     6             42         252
 ## 20         vis_eq_t3    13            285        3705
@@ -388,14 +397,14 @@ print(dblinks)</code></pre>
 <pre><code>## # A tibble: 8 x 8
 ##   Database Table             IDs   Count Table_Type Table_Name  Rank result
 ##   &lt;chr&gt;    &lt;chr&gt;             &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;
-## 1 artmo_1  test_inv_cf_ppal  ID_T1     7 test_cf    ppal           1      0
-## 2 artmo_1  test_cf_class     ID_T2     6 test_cf    class          2      0
-## 3 artmo_1  test_cf_parameter ID_T3     6 test_cf    parameter      3      0
-## 4 artmo_1  test_cf_algoritmo ID_T4    26 test_cf    algoritmo      4      0
-## 5 artmo_1  test_cf_alfa      ID_T5    26 test_cf    alfa           5      0
-## 6 artmo_1  test_cf_beta      ID_T6    26 test_cf    beta           6      0
-## 7 artmo_1  test_cf_noise     ID_T7   105 test_cf    noise          7      0
-## 8 artmo_1  test_cf_train     ID_T8   104 test_cf    train          8      1</code></pre>
+## 1 artmo_1  test_inv_cf_ppal  ID_T1     8 test_cf    ppal           1      0
+## 2 artmo_1  test_cf_class     ID_T2     7 test_cf    class          2      0
+## 3 artmo_1  test_cf_parameter ID_T3     7 test_cf    parameter      3      0
+## 4 artmo_1  test_cf_algoritmo ID_T4    33 test_cf    algoritmo      4      0
+## 5 artmo_1  test_cf_alfa      ID_T5    33 test_cf    alfa           5      0
+## 6 artmo_1  test_cf_beta      ID_T6    33 test_cf    beta           6      0
+## 7 artmo_1  test_cf_noise     ID_T7   126 test_cf    noise          7      0
+## 8 artmo_1  test_cf_train     ID_T8   125 test_cf    train          8      1</code></pre>
 <p>As you can see above each table contains one master ID that allows the link between the databases. Now all the data from each of the table has to be retrieved from the MySQL database. Hereby no information is written to the HD but everything remains in the RAM, so be aware that huge databases may cause <strong>Memory Issues</strong>.</p>
 <pre class="r"><code>dbtabs   &lt;- getTabs(con,dblinks)</code></pre>
 <pre><code>## Warning in rep(., each = vsalidas): first element used of &#39;each&#39; argument</code></pre>
@@ -405,18 +414,18 @@ print(dblinks)</code></pre>
 <pre><code>## # A tibble: 8 x 8
 ##   Database Table_Type Table_Name Table       Rank Count result MyTables   
 ##   &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;list&gt;     
-## 1 artmo_1  test_cf    ppal       test_inv_~     1     7      0 &lt;tibble [7~
-## 2 artmo_1  test_cf    class      test_cf_c~     2     6      0 &lt;tibble [6~
-## 3 artmo_1  test_cf    parameter  test_cf_p~     3     6      0 &lt;tibble [6~
-## 4 artmo_1  test_cf    algoritmo  test_cf_a~     4    26      0 &lt;tibble [2~
-## 5 artmo_1  test_cf    alfa       test_cf_a~     5    26      0 &lt;tibble [2~
-## 6 artmo_1  test_cf    beta       test_cf_b~     6    26      0 &lt;tibble [2~
-## 7 artmo_1  test_cf    noise      test_cf_n~     7   105      0 &lt;tibble [1~
-## 8 artmo_1  test_cf    train      test_cf_t~     8   104      1 &lt;tibble [1~</code></pre>
+## 1 artmo_1  test_cf    ppal       test_inv_~     1     8      0 &lt;tibble [8~
+## 2 artmo_1  test_cf    class      test_cf_c~     2     7      0 &lt;tibble [7~
+## 3 artmo_1  test_cf    parameter  test_cf_p~     3     7      0 &lt;tibble [7~
+## 4 artmo_1  test_cf    algoritmo  test_cf_a~     4    33      0 &lt;tibble [3~
+## 5 artmo_1  test_cf    alfa       test_cf_a~     5    33      0 &lt;tibble [3~
+## 6 artmo_1  test_cf    beta       test_cf_b~     6    33      0 &lt;tibble [3~
+## 7 artmo_1  test_cf    noise      test_cf_n~     7   126      0 &lt;tibble [1~
+## 8 artmo_1  test_cf    train      test_cf_t~     8   125      1 &lt;tibble [1~</code></pre>
 <p>The data now is nested depending on the Table Type (which approach has been used). The <em>MyTable</em> columns contain all data retrieved in the MySQL database stored in lists of tibbles. The function <code>dplyr::unnest()</code> allows to reduce their dimensionality and explore in detail the single tables for each of the approaches. If we want to unravel the Table concerning the results of the Database we can use</p>
 <pre class="r"><code>table&lt;-dbtabs %&gt;% filter(Table_Name==&quot;train&quot;) %&gt;% select(MyTables) %&gt;% unnest
 print(table)</code></pre>
-<pre><code>## # A tibble: 104 x 16
+<pre><code>## # A tibble: 125 x 16
 ##    ID_T8 ID_T7 ID_T3 ID_TRAIN train      ME  RMSE RELRMSE   MAE     R    R2
 ##    &lt;int&gt; &lt;int&gt; &lt;int&gt;    &lt;int&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
 ##  1    10    10     1        1     1  0.101   1.77    70.6  1.22 0.423 0.179
@@ -426,11 +435,11 @@ print(table)</code></pre>
 ##  5    50    50     2        1     1  0.222   1.66    66.2  1.19 0.562 0.316
 ##  6    64    64     2        1     1 -0.0518  2.21    88.0  1.63 0.321 0.103
 ##  7    84    84     2        1     1  0.349   1.63    65.0  1.17 0.539 0.291
-##  8     9     9     1        1     1  0.121   1.79    71.3  1.23 0.418 0.174
-##  9    19    19     1        1     1 -0.369   2.13    84.9  1.54 0.429 0.184
-## 10    29    29     1        1     1  1.31    2.00    79.8  1.50 0.572 0.327
-## # ... with 94 more rows, and 5 more variables: NRMSE &lt;dbl&gt;, TS &lt;dbl&gt;,
-## #   NSE &lt;dbl&gt;, tictoc &lt;dbl&gt;, resultados &lt;list&gt;</code></pre>
+##  8   115   116     7        1     1  1.1     3.19   127.   2.54 0.158 0.025
+##  9     9     9     1        1     1  0.121   1.79    71.3  1.23 0.418 0.174
+## 10    19    19     1        1     1 -0.369   2.13    84.9  1.54 0.429 0.184
+## # ... with 115 more rows, and 5 more variables: NRMSE &lt;dbl&gt;, TS &lt;dbl&gt;,
+## #   NSE &lt;dbl&gt;, tictoc &lt;dbl&gt;, Results &lt;list&gt;</code></pre>
 </div>
 <div id="aggregate" class="section level1">
 <h1><span class="header-section-number">5</span> Aggregate</h1>
@@ -440,33 +449,55 @@ print(dbjoin)</code></pre>
 <pre><code>## # A tibble: 1 x 3
 ##   Database Table_Type Metrics            
 ##   &lt;chr&gt;    &lt;chr&gt;      &lt;list&gt;             
-## 1 artmo_1  test_cf    &lt;tibble [108 x 29]&gt;</code></pre>
+## 1 artmo_1  test_cf    &lt;tibble [129 x 35]&gt;</code></pre>
+</div>
+<div id="working-environment" class="section level1">
+<h1><span class="header-section-number">6</span> Working Environment</h1>
+<p>Even though I would personally <strong>not recommend to save the resulting nested tibble</strong> the best possibility is by creating an RDS file. This is simply done with the <code>saveRDS</code> function. The big advantage of RDS is that the format is capable to handle the nesting as used in the presented tibbles. However, the dbjoin Element could become an extremely large object when saved. Consider saving parts of the <em>dbJoin</em> object such as by model.<br />
+It is recommended to build a folder structure before going in the deep analysis. This is very useful when the Output of the Model (such as Spatial Rasters) have to be connected to the Model output later.It is mandatory to manually connect the Model Output to the Table since ARTMO provides no logic Link in the MySQL tables to do so.</p>
+<pre class="r"><code>dir&lt;-&quot;C:/ARTMO&quot;
+models&lt;-buildpath(dbjoin,dir,foldersetup = T)
+
+models</code></pre>
+<pre><code>## # A tibble: 8 x 3
+##   Database Table_Type Dir                                 
+##   &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;                               
+## 1 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Model1/    
+## 2 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Model2/    
+## 3 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/ModelTia/  
+## 4 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Mattab/    
+## 5 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Table_1107/
+## 6 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Tabnew/    
+## 7 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/TABLEAGAIN/
+## 8 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Table_1210/</code></pre>
 </div>
 <div id="exploration" class="section level1">
-<h1><span class="header-section-number">6</span> Exploration</h1>
+<h1><span class="header-section-number">7</span> Exploration</h1>
 <p>Actually, this section is up to the next Part of this Website. Nonetheless here is the most common way to analyze one of the Table_Type aggregation. If the <code>dplyr::unnest</code> is used on single columns the MySQL result can be analyzed.</p>
 <p><strong>NOTE</strong>: This won’t work for the complete tibble since they have different column names. It is recommended to either standardize or process them one by one.</p>
 <pre class="r"><code>statistics&lt;- dbjoin[1,] %&gt;% unnest
 print(statistics)</code></pre>
-<pre><code>## # A tibble: 108 x 31
-##    Database Table_Type test_name general_info name_class derivar size_data
-##    &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;     &lt;list&gt;       &lt;chr&gt;        &lt;int&gt; &lt;S3: int&gt;
-##  1 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
-##  2 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
-##  3 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
-##  4 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
-##  5 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
-##  6 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
-##  7 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
-##  8 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
-##  9 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
-## 10 artmo_1  test_cf    Model1    &lt;tibble [1 ~ Full_image       0 1000     
-## # ... with 98 more rows, and 24 more variables: estadistico &lt;int&gt;,
-## #   spectros_user &lt;list&gt;, lut &lt;list&gt;, name_parameter &lt;chr&gt;, clave &lt;chr&gt;,
-## #   param_user &lt;list&gt;, name_algoritmo &lt;chr&gt;, normalizar &lt;int&gt;, sim &lt;S3:
-## #   integer64&gt;, alfa &lt;dbl&gt;, beta &lt;dbl&gt;, noise &lt;dbl&gt;, train &lt;dbl&gt;,
-## #   ME &lt;dbl&gt;, RMSE &lt;dbl&gt;, RELRMSE &lt;dbl&gt;, MAE &lt;dbl&gt;, R &lt;dbl&gt;, R2 &lt;dbl&gt;,
-## #   NRMSE &lt;dbl&gt;, TS &lt;dbl&gt;, NSE &lt;dbl&gt;, tictoc &lt;dbl&gt;, resultados &lt;list&gt;</code></pre>
+<pre><code>## # A tibble: 129 x 37
+##    Database Table_Type Model Database1 Project PY_ID Date  name_class
+##    &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt; &lt;chr&gt;     &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     
+##  1 artmo_1  test_cf    Mode~ artmo_1   Mattia1 1     2018~ Full_image
+##  2 artmo_1  test_cf    Mode~ artmo_1   Mattia1 1     2018~ Full_image
+##  3 artmo_1  test_cf    Mode~ artmo_1   Mattia1 1     2018~ Full_image
+##  4 artmo_1  test_cf    Mode~ artmo_1   Mattia1 1     2018~ Full_image
+##  5 artmo_1  test_cf    Mode~ artmo_1   Mattia1 1     2018~ Full_image
+##  6 artmo_1  test_cf    Mode~ artmo_1   Mattia1 1     2018~ Full_image
+##  7 artmo_1  test_cf    Mode~ artmo_1   Mattia1 1     2018~ Full_image
+##  8 artmo_1  test_cf    Mode~ artmo_1   Mattia1 1     2018~ Full_image
+##  9 artmo_1  test_cf    Mode~ artmo_1   Mattia1 1     2018~ Full_image
+## 10 artmo_1  test_cf    Mode~ artmo_1   Mattia1 1     2018~ Full_image
+## # ... with 119 more rows, and 29 more variables: derivar &lt;int&gt;,
+## #   size_data &lt;S3: integer64&gt;, estadistico &lt;int&gt;, Spectra &lt;list&gt;,
+## #   LUT &lt;list&gt;, Name1 &lt;chr&gt;, Name2 &lt;chr&gt;, clave &lt;chr&gt;, param_user &lt;list&gt;,
+## #   algorithm &lt;chr&gt;, normalizar &lt;int&gt;, sim &lt;S3: integer64&gt;, alfa &lt;dbl&gt;,
+## #   beta &lt;dbl&gt;, noise &lt;dbl&gt;, train &lt;dbl&gt;, ME &lt;dbl&gt;, RMSE &lt;dbl&gt;,
+## #   RELRMSE &lt;dbl&gt;, MAE &lt;dbl&gt;, R &lt;dbl&gt;, R2 &lt;dbl&gt;, NRMSE &lt;dbl&gt;, TS &lt;dbl&gt;,
+## #   NSE &lt;dbl&gt;, tictoc &lt;dbl&gt;, Results &lt;list&gt;, Store.ID &lt;int&gt;,
+## #   Table_Type1 &lt;chr&gt;</code></pre>
 </div>
 
 

@@ -83,14 +83,14 @@ print(dblinks)
 
 As you can see above each table contains one master ID that allows the link between the databases. Now all the data from each of the table has to be retrieved from the MySQL database. Hereby no information is written to the HD but everything remains in the RAM, so be aware that huge databases may cause **Memory Issues**.
 
-```{r,e3,warnings=FALSE}
+```{r e3,warnings=FALSE}
 dbtabs   <- getTabs(con,dblinks)
 print(dbtabs)
 ```
 
 The data now is nested depending on the Table Type (which approach has been used). The *MyTable* columns contain all data retrieved in the MySQL database stored in lists of tibbles. The function `dplyr::unnest()` allows to reduce their dimensionality and explore in detail the single tables for each of the approaches. If we want to unravel the Table concerning the results of the Database we can use
 
-```{r,warnings=FALSE}
+```{r e4,warnings=FALSE}
 table<-dbtabs %>% filter(Table_Name=="train") %>% select(MyTables) %>% unnest
 print(table)
 ```
@@ -99,9 +99,23 @@ print(table)
 
 The nesting may has happened on multiple levels in the tibbles. This means that some of the lists contain lists. This level of complexity s necessary to reduce the amount of processing time as well as the RAM resources. The `dbJoin` function helps to aggregate all the information based on the Table_Type column. The *MyTables* column is therefore recursively joined based on the unique identifiers
 
-```{r,warning=FALSE,message=FALSE}
+```{r Join,warning=FALSE,message=FALSE}
 dbjoin   <- doJoin(dbtabs,removeid = T)
 print(dbjoin)
+```
+
+# Working Environment
+
+Even though I would personally **not recommend to save the resulting nested tibble** the best possibility is by creating an RDS file. This is simply done with the `saveRDS` function. The big advantage of RDS is that the format is capable to handle the nesting as used in the presented tibbles. However, the dbjoin Element could become an extremely large object when saved. Consider saving parts of the *dbJoin* object such as by model.  
+It is  recommended to build a folder structure before going in the deep analysis. This is very useful when the Output of the Model (such as Spatial Rasters) have to be connected to the Model output later.It is mandatory to manually connect the Model Output to the Table since ARTMO provides no logic Link in the MySQL tables to do so.
+
+```{r getModels}
+
+dir<-"C:/ARTMO"
+models<-buildpath(dbjoin,dir,foldersetup = T)
+
+models
+
 ```
 
 
