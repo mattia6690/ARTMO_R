@@ -22,6 +22,7 @@ This part of the code is necessary to set up the working environment. For easier
 The first step consists in loading the necessary functions and packages all specified in the following Scripts.
 
 ```{r,warning=FALSE,message=FALSE}
+source("../R/Packages.R")
 source("../R/Essentials.R")
 source("../R/Fun_MySQL.R")
 source("../R/Fun_Binary.R")
@@ -104,6 +105,19 @@ dbjoin   <- doJoin(dbtabs,removeid = T)
 print(dbjoin)
 ```
 
+
+# Exploration
+
+Actually, this section is up to the next Part of this Website. Nonetheless here is the most common way to analyze one of the Table_Type aggregation. If the `dplyr::unnest` is used on single columns the MySQL result can be analyzed.
+
+**NOTE**: This won't work for the complete tibble since they have different column names. It is recommended to either standardize or process them one by one.
+
+```{r}
+statistics<- dbjoin[1,] %>% unnest
+print(statistics)
+```
+
+
 # Working Environment
 
 Even though I would personally **not recommend to save the resulting nested tibble** the best possibility is by creating an RDS file. This is simply done with the `saveRDS` function. The big advantage of RDS is that the format is capable to handle the nesting as used in the presented tibbles. However, the dbjoin Element could become an extremely large object when saved. Consider saving parts of the *dbJoin* object such as by model.  
@@ -117,19 +131,6 @@ models<-buildpath(dbjoin,dir,foldersetup = T)
 models
 
 ```
-
-
-# Exploration
-
-Actually, this section is up to the next Part of this Website. Nonetheless here is the most common way to analyze one of the Table_Type aggregation. If the `dplyr::unnest` is used on single columns the MySQL result can be analyzed.
-
-**NOTE**: This won't work for the complete tibble since they have different column names. It is recommended to either standardize or process them one by one.
-
-```{r}
-statistics<- dbjoin[1,] %>% unnest
-print(statistics)
-```
-
 
 
 

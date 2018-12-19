@@ -1,6 +1,8 @@
 ---
 title: "Changelog"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ## v 0.0.2

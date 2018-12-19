@@ -20,6 +20,7 @@ This Tutorial draws a **possible approach for the analysis** of combined modelle
 Analogous to the previous tutorial the first step consists in loading the necessary functions and packages.
 
 ```{r e1,warning=FALSE,message=FALSE}
+source("../R/Packages.R")
 source("../R/Essentials.R")
 source("../R/Fun_Spatial.R")
 ```
@@ -81,9 +82,9 @@ But watch out! It is important to add the Date to the Shapefile
 ```{r}
 
 dates<-c("2017-05-24","2017-05-31","2017-06-07","2017-06-15")
-dates<-as.Date(dates)
 
-stat.spat.ras$AcqDate<-dates
+stat.spat.ras<-stat.spat.ras %>% dplyr::mutate(AcqDate=as.Date(dates))
+
 
 ```
 
@@ -105,18 +106,18 @@ gpsdata<- gpdata.file %>%
 
 ```{r}
 print(gpsdata,n=5)
-plot(gpsdata)
+plot(gpsdata,axes=T)
+plot(gpsdata["meanLAI"],axes=T)
 ```
 
 # Connect Datasets
 
 The Simple Feature is simply added to the Database we generated with the steps a-priori as a new columns. It is again considerated as a nested element 
 
-
 ```{r}
 
 stat.spat.ras.sf<-stat.spat.ras %>% 
-  mutate(Features=map(AcqDate,function(x){
+  dplyr::mutate(Features=map(AcqDate,function(x){
     
     gpsdata %>% filter(AcqDate==x) %>% return(.)
     
@@ -162,7 +163,7 @@ g1<-ggplot(selection,aes(Simulated,Measured,color=Date))+ theme_bw()+
   geom_smooth(method="lm",se=F,col="brown")+
   geom_abline(intercept=0,slope=1,linetype="dotted")+
   facet_wrap(.~Station,ncol=2)+
-  xlab("Simulated LAI")+ylab("Measured LAI")+
+  xlab("Estimated LAI")+ylab("Measured LAI")+
   ylim(c(0,10))+
   xlim(c(0,10))
 g1

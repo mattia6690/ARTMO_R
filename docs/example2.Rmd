@@ -16,7 +16,9 @@ The Tutorial on this site Aims at evaluating the single models within the ARTMO 
 Analogue to the previous tutorial the first step consists in loading the necessary functions and packages.
 
 ```{r e1,warning=FALSE,message=FALSE}
+source("../R/Packages.R")
 source("../R/Essentials.R")
+source("../R/Fun_Stats_ALL.R")
 source("../R/Fun_Plot.R")
 ```
 
@@ -125,7 +127,7 @@ stat.gather<-stat %>%
   setNames(c("level1","level2","level3","Value")) %>% 
   mutate(level1 = toupper(level1))
 
-library(collapsibleTree)
+loadandinstall("collapsibleTree")
 collapsibleTreeSummary(stat.gather,hierarchy=c("level1","level2","level3","Value"),
                        collapsed=F,
                        nodeSize="leafCount",root=NULL)
@@ -182,12 +184,21 @@ For further Testing we use the **Exponential** Alorithm together eith a **noise 
 ```{r mod3}
 
 algorithm.s<-"Exponential"
-noise.s<-5
+noise.s<-1.25
 
 gg.select<-stat.model.gg %>% filter(algorithm==algorithm.s & noise==noise.s)
 
-print(gg.select$ResultGG[[1]])
+gg1<-gg.select$ResultGG[[1]]
+gg1
+
 ```
 
+And now interactively
 
+```{r plotly,message=F,warning=F}
+loadandinstall("plotly")
+
+ggplotly(gg1)
+
+```
 

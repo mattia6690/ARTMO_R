@@ -311,7 +311,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Get ARTMO Data</h1>
 <h4 class="author"><em>Mattia Rossi</em></h4>
-<h4 class="date"><em>17 December, 2018</em></h4>
+<h4 class="date"><em>18 December, 2018</em></h4>
 
 </div>
 
@@ -325,7 +325,8 @@ div.tocify {
 * <strong>Binary</strong>: Functions for the Conversion of the MySQL Binary Blob.<br />
 * <strong>Stats</strong>: Functions applied to several tables.This part has been most trick since each of the three approaches (MLA, VI, Inversion) is stored in a unique way containing Binary Blobs, Matlab objects and regular objects.</p>
 <p>The first step consists in loading the necessary functions and packages all specified in the following Scripts.</p>
-<pre class="r"><code>source(&quot;../R/Essentials.R&quot;)
+<pre class="r"><code>source(&quot;../R/Packages.R&quot;)
+source(&quot;../R/Essentials.R&quot;)
 source(&quot;../R/Fun_MySQL.R&quot;)
 source(&quot;../R/Fun_Binary.R&quot;)
 source(&quot;../R/Fun_Stats_CF.R&quot;)
@@ -359,69 +360,97 @@ summary(con)</code></pre>
 ## conType = localhost via TCP/IP 
 ## serverVersion = 5.6.42-log 
 ## protocolVersion = 10 
-## threadId = 1526 
+## threadId = 1667 
 ## client = 5.5.1</code></pre>
 <p>Once connected <code>get.tables.db</code> helps to explore the tables stored in the MySQL back-end for the specific database. Here all the possible tables are displayed. The ones not containing any information have a count of 0 and will be discontinued in the next steps</p>
 <pre class="r"><code>db.tabs&lt;-get.tables.db(con)
 print(db.tabs)</code></pre>
-<pre><code>##                 Name  Rows Avg_row_length Data_length
-## 1   aux_prospect4_t2    20          33680      673600
-## 2       aux_sail4_t2 10000            240     2400000
-## 3             master    10           3328       33280
-## 4       prospect4_t1    20          21748      434976
-## 5       prospect4_t2  6090          33680   205111200
-## 6         s_sail4_t2  9980             34      344064
-## 7           sail4_t1    40           2745      109800
-## 8           sail4_t2 81000            240    19480000
-## 9             sensor    16          36784      588660
-## 10      test_cf_alfa    33             15         495
-## 11 test_cf_algoritmo    33             42        1400
-## 12      test_cf_beta    33             15         495
-## 13     test_cf_class     7         847740     5934184
-## 14     test_cf_noise   126        9048056  1140055080
-## 15 test_cf_parameter     7           1296        9076
-## 16     test_cf_train   125           1116      139500
-## 17  test_inv_cf_ppal     8            498        3988
-## 18         vis_eq_t1     1            260         260
-## 19         vis_eq_t2     6             42         252
-## 20         vis_eq_t3    13            285        3705
-## 21            vis_t1     4            260        1040
-## 22            vis_t2    11             85         936
-## 23            vis_t3    24            534       12816</code></pre>
+<pre><code>##                  Name  Rows Avg_row_length Data_length
+## 1    aux_prospect4_t2  1000             81       81920
+## 2        aux_sail4_t2  1000            180      180224
+## 3              master    10           3328       33280
+## 4        prospect4_t1    20          21748      434976
+## 5        prospect4_t2  6090          33680   205111200
+## 6      s_prospect4_t2  1000             65       65536
+## 7          s_sail4_t2  1000             65       65536
+## 8            sail4_t1    40           2745      109800
+## 9            sail4_t2 81000            240    19480000
+## 10             sensor    16          36784      588660
+## 11       test_cf_alfa    33             15         495
+## 12  test_cf_algoritmo    33             42        1400
+## 13       test_cf_beta    33             15         495
+## 14      test_cf_class     7         847740     5934184
+## 15      test_cf_noise   126        9048056  1140055080
+## 16  test_cf_parameter     7           1296        9076
+## 17      test_cf_train   125           1116      139500
+## 18   test_inv_cf_ppal     8            498        3988
+## 19 test_mla_algoritmo     7            284        1988
+## 20     test_mla_class     3            280         840
+## 21    test_mla_noise1     7             13          91
+## 22    test_mla_noise2    31             13         403
+## 23 test_mla_parameter     3            268         804
+## 24      test_mla_ppal     3           2312        6936
+## 25    test_mla_result    31         873528    27079392
+## 26    test_mla_train1    31             13         403
+## 27    test_mla_train2    31             13         403
+## 28          vis_eq_t1     1            260         260
+## 29          vis_eq_t2     6             42         252
+## 30          vis_eq_t3    13            285        3705
+## 31             vis_t1     4            260        1040
+## 32             vis_t2    11             85         936
+## 33             vis_t3    24            534       12816</code></pre>
 </div>
 <div id="search-and-store" class="section level1">
 <h1><span class="header-section-number">4</span> Search and Store</h1>
 <p>Furthermore the most important part when dealing with MySQL - or basically with any SQL - code is to link the various tables one to the other. Due to the complexity of ARTMO each approach generates numerous tables, comprise several different data types and are linked in a sometimes inconsistent way to each other. Depending on the workflows more than 10 tables have to be recursively liked one to the other. The <code>getLinks</code> function resolves tackles this issue and finds the connection between tables</p>
 <pre class="r"><code>dblinks  &lt;- getLinks(con)
 print(dblinks)</code></pre>
-<pre><code>## # A tibble: 8 x 8
-##   Database Table             IDs   Count Table_Type Table_Name  Rank result
-##   &lt;chr&gt;    &lt;chr&gt;             &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;
-## 1 artmo_1  test_inv_cf_ppal  ID_T1     8 test_cf    ppal           1      0
-## 2 artmo_1  test_cf_class     ID_T2     7 test_cf    class          2      0
-## 3 artmo_1  test_cf_parameter ID_T3     7 test_cf    parameter      3      0
-## 4 artmo_1  test_cf_algoritmo ID_T4    33 test_cf    algoritmo      4      0
-## 5 artmo_1  test_cf_alfa      ID_T5    33 test_cf    alfa           5      0
-## 6 artmo_1  test_cf_beta      ID_T6    33 test_cf    beta           6      0
-## 7 artmo_1  test_cf_noise     ID_T7   126 test_cf    noise          7      0
-## 8 artmo_1  test_cf_train     ID_T8   125 test_cf    train          8      1</code></pre>
+<pre><code>## # A tibble: 17 x 8
+##    Database Table           IDs   Count Table_Type Table_Name  Rank result
+##    &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt;  &lt;dbl&gt;
+##  1 artmo_1  test_inv_cf_pp~ ID_T1     8 test_cf    ppal           1      0
+##  2 artmo_1  test_cf_class   ID_T2     7 test_cf    class          2      0
+##  3 artmo_1  test_cf_parame~ ID_T3     7 test_cf    parameter      3      0
+##  4 artmo_1  test_cf_algori~ ID_T4    33 test_cf    algoritmo      4      0
+##  5 artmo_1  test_cf_alfa    ID_T5    33 test_cf    alfa           5      0
+##  6 artmo_1  test_cf_beta    ID_T6    33 test_cf    beta           6      0
+##  7 artmo_1  test_cf_noise   ID_T7   126 test_cf    noise          7      0
+##  8 artmo_1  test_cf_train   ID_T8   125 test_cf    train          8      1
+##  9 artmo_1  test_mla_ppal   ID_T1     3 test_mla   ppal           1      0
+## 10 artmo_1  test_mla_class  ID_T2     3 test_mla   class          2      0
+## 11 artmo_1  test_mla_param~ ID_T3     3 test_mla   parameter      3      0
+## 12 artmo_1  test_mla_algor~ ID_T4     7 test_mla   algoritmo      4      0
+## 13 artmo_1  test_mla_noise1 ID_T5     7 test_mla   noise1         5      0
+## 14 artmo_1  test_mla_noise2 ID_T6    31 test_mla   noise2         6      0
+## 15 artmo_1  test_mla_train1 ID_T7    31 test_mla   train1         7      0
+## 16 artmo_1  test_mla_train2 ID_T8    31 test_mla   train2         8      0
+## 17 artmo_1  test_mla_result ID_T9    31 test_mla   result         9      1</code></pre>
 <p>As you can see above each table contains one master ID that allows the link between the databases. Now all the data from each of the table has to be retrieved from the MySQL database. Hereby no information is written to the HD but everything remains in the RAM, so be aware that huge databases may cause <strong>Memory Issues</strong>.</p>
 <pre class="r"><code>dbtabs   &lt;- getTabs(con,dblinks)</code></pre>
 <pre><code>## Warning in rep(., each = vsalidas): first element used of &#39;each&#39; argument</code></pre>
 <pre><code>## Warning in cbind(Spec_id, vsalidas.rep, spectral): number of rows of result
 ## is not a multiple of vector length (arg 1)</code></pre>
 <pre class="r"><code>print(dbtabs)</code></pre>
-<pre><code>## # A tibble: 8 x 8
-##   Database Table_Type Table_Name Table       Rank Count result MyTables   
-##   &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;list&gt;     
-## 1 artmo_1  test_cf    ppal       test_inv_~     1     8      0 &lt;tibble [8~
-## 2 artmo_1  test_cf    class      test_cf_c~     2     7      0 &lt;tibble [7~
-## 3 artmo_1  test_cf    parameter  test_cf_p~     3     7      0 &lt;tibble [7~
-## 4 artmo_1  test_cf    algoritmo  test_cf_a~     4    33      0 &lt;tibble [3~
-## 5 artmo_1  test_cf    alfa       test_cf_a~     5    33      0 &lt;tibble [3~
-## 6 artmo_1  test_cf    beta       test_cf_b~     6    33      0 &lt;tibble [3~
-## 7 artmo_1  test_cf    noise      test_cf_n~     7   126      0 &lt;tibble [1~
-## 8 artmo_1  test_cf    train      test_cf_t~     8   125      1 &lt;tibble [1~</code></pre>
+<pre><code>## # A tibble: 17 x 8
+##    Database Table_Type Table_Name Table      Rank Count result MyTables   
+##    &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;list&gt;     
+##  1 artmo_1  test_cf    ppal       test_inv~     1     8      0 &lt;tibble [8~
+##  2 artmo_1  test_cf    class      test_cf_~     2     7      0 &lt;tibble [7~
+##  3 artmo_1  test_cf    parameter  test_cf_~     3     7      0 &lt;tibble [7~
+##  4 artmo_1  test_cf    algoritmo  test_cf_~     4    33      0 &lt;tibble [3~
+##  5 artmo_1  test_cf    alfa       test_cf_~     5    33      0 &lt;tibble [3~
+##  6 artmo_1  test_cf    beta       test_cf_~     6    33      0 &lt;tibble [3~
+##  7 artmo_1  test_cf    noise      test_cf_~     7   126      0 &lt;tibble [1~
+##  8 artmo_1  test_cf    train      test_cf_~     8   125      1 &lt;tibble [1~
+##  9 artmo_1  test_mla   ppal       test_mla~     1     3      0 &lt;tibble [3~
+## 10 artmo_1  test_mla   class      test_mla~     2     3      0 &lt;tibble [3~
+## 11 artmo_1  test_mla   parameter  test_mla~     3     3      0 &lt;tibble [3~
+## 12 artmo_1  test_mla   algoritmo  test_mla~     4     7      0 &lt;tibble [7~
+## 13 artmo_1  test_mla   noise1     test_mla~     5     7      0 &lt;tibble [7~
+## 14 artmo_1  test_mla   noise2     test_mla~     6    31      0 &lt;tibble [3~
+## 15 artmo_1  test_mla   train1     test_mla~     7    31      0 &lt;tibble [3~
+## 16 artmo_1  test_mla   train2     test_mla~     8    31      0 &lt;tibble [3~
+## 17 artmo_1  test_mla   result     test_mla~     9    31      1 &lt;tibble [3~</code></pre>
 <p>The data now is nested depending on the Table Type (which approach has been used). The <em>MyTable</em> columns contain all data retrieved in the MySQL database stored in lists of tibbles. The function <code>dplyr::unnest()</code> allows to reduce their dimensionality and explore in detail the single tables for each of the approaches. If we want to unravel the Table concerning the results of the Database we can use</p>
 <pre class="r"><code>table&lt;-dbtabs %&gt;% filter(Table_Name==&quot;train&quot;) %&gt;% select(MyTables) %&gt;% unnest
 print(table)</code></pre>
@@ -446,10 +475,11 @@ print(table)</code></pre>
 <p>The nesting may has happened on multiple levels in the tibbles. This means that some of the lists contain lists. This level of complexity s necessary to reduce the amount of processing time as well as the RAM resources. The <code>dbJoin</code> function helps to aggregate all the information based on the Table_Type column. The <em>MyTables</em> column is therefore recursively joined based on the unique identifiers</p>
 <pre class="r"><code>dbjoin   &lt;- doJoin(dbtabs,removeid = T)
 print(dbjoin)</code></pre>
-<pre><code>## # A tibble: 1 x 3
+<pre><code>## # A tibble: 2 x 3
 ##   Database Table_Type Metrics            
 ##   &lt;chr&gt;    &lt;chr&gt;      &lt;list&gt;             
-## 1 artmo_1  test_cf    &lt;tibble [129 x 35]&gt;</code></pre>
+## 1 artmo_1  test_cf    &lt;tibble [129 x 35]&gt;
+## 2 artmo_1  test_mla   &lt;tibble [31 x 35]&gt;</code></pre>
 </div>
 <div id="working-environment" class="section level1">
 <h1><span class="header-section-number">6</span> Working Environment</h1>
@@ -459,17 +489,20 @@ It is recommended to build a folder structure before going in the deep analysis.
 models&lt;-buildpath(dbjoin,dir,foldersetup = T)
 
 models</code></pre>
-<pre><code>## # A tibble: 8 x 3
-##   Database Table_Type Dir                                 
-##   &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;                               
-## 1 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Model1/    
-## 2 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Model2/    
-## 3 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/ModelTia/  
-## 4 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Mattab/    
-## 5 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Table_1107/
-## 6 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Tabnew/    
-## 7 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/TABLEAGAIN/
-## 8 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Table_1210/</code></pre>
+<pre><code>## # A tibble: 11 x 3
+##    Database Table_Type Dir                                 
+##    &lt;chr&gt;    &lt;chr&gt;      &lt;chr&gt;                               
+##  1 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Model1/    
+##  2 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Model2/    
+##  3 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/ModelTia/  
+##  4 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Mattab/    
+##  5 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Table_1107/
+##  6 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Tabnew/    
+##  7 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/TABLEAGAIN/
+##  8 artmo_1  test_cf    C:/ARTMO/artmo_1/test_cf/Table_1210/
+##  9 artmo_1  test_mla   C:/ARTMO/artmo_1/test_mla/MLRA1/    
+## 10 artmo_1  test_mla   C:/ARTMO/artmo_1/test_mla/MLRA2/    
+## 11 artmo_1  test_mla   C:/ARTMO/artmo_1/test_mla/MLRA3/</code></pre>
 </div>
 <div id="exploration" class="section level1">
 <h1><span class="header-section-number">7</span> Exploration</h1>
