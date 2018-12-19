@@ -8,35 +8,7 @@
 
 # Function for Melting the Dataframe based on needed Models, Parameters, Statistics etc.
 # Possibility to add GGplot representation
-stat.condense<-function(jtable,model=NULL,parameters=NULL,statistics=NULL,addGG=F){
-  
-  gg1<-jtable %>% 
-    select(Model,
-           Store.ID,
-           eval(statistics),
-           eval(parameters),
-           Results)
-  
-  if(!is.null(model)) gg1<-gg1 %>% filter(Model==model)
-  if(nrow(gg1)==0) stop("Check your Inputs!")
-  
-  if(addGG==T){
-    
-    gg1<-gg1 %>% 
-      mutate(ResultGG=pmap(.,function(...,Results){
-        
-        g1<-ggplot(Results,aes(Measured,Estimated))+
-          geom_point()+
-          geom_smooth(method="lm")+
-          ggtitle(glue("Measured vs. Estimated Samples"))+
-          xlim(0,10)+ylim(0,10)+
-          geom_abline(intercept=0,slope=1,col="firebrick4",linetype=2)
-        return(g1)
-        
-      }))
-  }
-  return(gg1)
-}
+
 
 
 SpatDir<-function(table,dir="",addraster=F){

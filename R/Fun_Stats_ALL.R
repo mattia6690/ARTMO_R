@@ -52,7 +52,7 @@ getTabs<-function(con,links){
   toload<-links %>% select(Database,Table_Type,Table_Name,Table,Rank,Count,result)
   
   stat.tabs<-toload %>% 
-    mutate(MyTables=pmap(.,function(...,Table_Type,Table,result){
+    dplyr::mutate(MyTables=pmap(.,function(...,Table_Type,Table,result){
     
     #' Machine Learning
     if(Table_Type=="test_mla"){
@@ -68,10 +68,10 @@ getTabs<-function(con,links){
       if(any(tabn=="staticscv")) tab<-.mlr.staticscv(tab)
       
       # Delete Columns
-      if(any(tabn=="mla_settigs"))  tab<-tab %>% select(-"mla_settigs")
-      if(any(tabn=="general_info")) tab<-tab %>% select(-"general_info")
+      if(any(tabn=="mla_settigs"))  tab<-tab %>% dplyr::select(-"mla_settigs")
+      if(any(tabn=="general_info")) tab<-tab %>% dplyr::select(-"general_info")
     }
-    
+      
     #' Lookup Table Inversion
     if(Table_Type=="test_cf"){
       
@@ -132,10 +132,11 @@ doJoin<-function(tabs,removeid=F){
   
   # Group and perform operation by Table Type (each class single)
   t1<-tabs %>% group_by(Database,Table_Type) %>% nest
-  t2<-t1 %>% mutate(Metrics=pmap(.,function(...){
+  t2<-t1 %>% 
+    dplyr::mutate(Metrics=pmap(.,function(...,Database,Table_Type,data){
     
     # Join all the Metainformation
-    meta<- data[[1]] %>% filter(result==0)
+    meta<- data %>% filter(result==0)
     
     if(nrow(meta)>0){
       
@@ -150,7 +151,7 @@ doJoin<-function(tabs,removeid=F){
     } else {tib.meta<-NA}
     
     # Join all the Results
-    result<- data[[1]] %>% filter(result==1)
+    result<- data %>% filter(result==1)
     
     if(nrow(result)>0){
       
@@ -178,6 +179,36 @@ doJoin<-function(tabs,removeid=F){
  
 }
 
+# COndense the Table to the most important Models, Parameters and Statistic
+stat.condense<-function(jtable,model=NULL,parameters=NULL,statistics=NULL,addGG=F){
+  
+  gg1<-jtable %>% 
+    select(Model,
+           Store.ID,
+           eval(statistics),
+           eval(parameters),
+           Results)
+  
+  if(!is.null(model)) gg1<-gg1 %>% filter(Model==model)
+  if(nrow(gg1)==0) stop("Check your Inputs!")
+  
+  if(addGG==T){
+    
+    gg1<-gg1 %>% 
+      mutate(ResultGG=pmap(.,function(...,Results){
+        
+        g1<-ggplot(Results,aes(Measured,Estimated))+
+          geom_point()+
+          geom_smooth(method="lm")+
+          ggtitle(glue("Measured vs. Estimated Samples"))+
+          xlim(0,10)+ylim(0,10)+
+          geom_abline(intercept=0,slope=1,col="firebrick4",linetype=2)
+        return(g1)
+        
+      }))
+  }
+  return(gg1)
+}
 
 
 # Side Functions ----------------------------
