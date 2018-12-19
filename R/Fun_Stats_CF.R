@@ -18,10 +18,15 @@ cost.tableclass<-function(x){
     matall<-readMat(x)$data[,,1]
     matall.rtm<-matall$rtm[,,1] %>% 
       melt %>% 
-      select(Type=L1,Value=value) %>% 
-      filter(Type!="rtm") %>% t %>% as.tibble
+      dplyr::select(Type=L1,Value=value) %>% 
+      filter(Type!="rtm") %>% 
+      t %>% 
+      as.tibble
+    
     colnames(matall.rtm)<-matall.rtm[1,]
-    matall.rtm<-matall.rtm %>% dplyr::select(database,project,id,date)
+    matall.rtm<-matall.rtm %>% 
+      dplyr::select(database,project,id,date)
+    
     matall.rtm<-matall.rtm[-1,]
     colnames(matall.rtm)<-c("Database","Project","PY_ID","Date")
     matall.rtm<-as.tibble(matall.rtm) 
@@ -41,14 +46,17 @@ cost.tableclass<-function(x){
     
     readMat(x)$data[,,1] %>% 
       melt %>% 
-      select(param_user=L1,param_user_val=value) %>% 
+      dplyr::select(param_user=L1,param_user_val=value) %>% 
       filter(param_user=="label") %>% 
-      select(param_user_val) %>% 
+      dplyr::select(param_user_val) %>% 
       unlist(use.names = F) %>% 
       as.numeric
     
   })
-  out <-table %>% select(-param_user) %>% mutate(param_user=mapper)
+  out <-table %>% 
+    dplyr::select(-param_user) %>% 
+    dplyr::mutate(param_user=mapper)
+  
   return(out)
 }
 
@@ -63,11 +71,14 @@ cost.tableclass<-function(x){
     s3 <- melt(s2) %>% 
       setNames(c("Wavelength","Iteration","Value")) %>% 
       as.tibble %>% 
-      mutate(Spectrum=sprintf("%03s",as.character(Iteration)))
+      dplyr::mutate(Spectrum=sprintf("%03s",as.character(Iteration)))
     
   })
   
-  out <-table %>% select(-spectros_user) %>% mutate(Spectra=mapper)
+  out <-table %>% 
+    dplyr::select(-spectros_user) %>% 
+    dplyr::mutate(Spectra=mapper)
+  
   return(out)
 }
 
@@ -83,13 +94,19 @@ cost.tableclass<-function(x){
     extracts<-c("nom.modelo","vinput","vclass","vmodel","tablasocio","output")
     mp <- map(extracts,function(x,l=lut) { l[x,,1] %>% unlist(use.names = F)})
     
-    master<- mp %>% bind_cols %>% setNames(extracts)
-    spectral<-lut["spectral",,1] %>% unlist(use.names = F)
-    vsalidas<-lut["vsalidas",,1]$vsalidas[,,1] %>% unlist(use.names = F)
+    master<- mp %>% 
+      bind_cols %>% 
+      setNames(extracts)
+    
+    spectral<-lut["spectral",,1] %>% 
+      unlist(use.names = F)
+    vsalidas<-lut["vsalidas",,1]$vsalidas[,,1] %>% 
+      unlist(use.names = F)
     
     diff<-length(spectral)/length(vsalidas)
     vsalidas.rep<- rep(vsalidas,each=diff)
-    Spec_id<-seq(1,length(vsalidas),1) %>% rep(each=vsalidas)
+    Spec_id<-seq(1,length(vsalidas),1) %>% 
+      rep(each=vsalidas)
     
     lut<-cbind(Spec_id,vsalidas.rep,spectral) %>% 
       as.tibble %>% 
@@ -97,9 +114,9 @@ cost.tableclass<-function(x){
       list
     
     master$LUT<-lut
-    out <-table %>% select(-lut) %>% mutate(LUT=list(master))
-    #id.mod  <-lut["id.modelo",,1] %>% bind_cols %>% unnest %>% list
-    #out <-table %>% select(-lut) %>% mutate(lut=list(master))
+    out <-table %>% 
+      dplyr::select(-lut) %>% 
+      dplyr::mutate(LUT=list(master))
     
   } else {out <- table}
   return(out)
@@ -115,7 +132,9 @@ cost.tableclass<-function(x){
       setNames(c("Measured","Estimated"))
   })
   
-  out<-table %>% mutate(Results=numbs) %>% select(-resultados)
+  out<-table %>% 
+    dplyr::mutate(Results=numbs) %>% 
+    dplyr::select(-resultados)
   return(out)
 }
 

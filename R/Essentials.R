@@ -1,9 +1,6 @@
 
-# Loadandinstall
-loadandinstall <- function(mypkg) {if (!is.element(mypkg, installed.packages()[,1]))
-{install.packages(mypkg)}; library(mypkg, character.only=TRUE) }
-
-# Dircheckup
+#' Check whether Directory is available and 
+#' create necessary Folder structure
 dircheckup     <- function(mydir) {
   
   sp<-str_split(mydir,"/")[[1]]
@@ -13,20 +10,6 @@ dircheckup     <- function(mydir) {
   }
 }
 
-# Required Packages -------------------------------------------------------
-
-library("raster")
-library("sf")
-library("tools")
-library("tidyverse")
-library("lubridate")
-library("magrittr")
-library("R.matlab")
-library("RMariaDB")
-library("reshape2")
-library("glue")
-
-# General Functions ---------------------------------------------------------------
 
 # Transforms an lm function output to text usable for ggplots
 # Greetings to Jodie Burchell (http://t-redactyl.io/)
@@ -43,10 +26,10 @@ r2.equation = function(x) {
 buildpath<-function(dbjoin,dir="",foldersetup=F){
   
   db1<-dbjoin %>% 
-    mutate(Dir=pmap(.,function(...){
+    mutate(Dir=pmap(.,function(...,Database,Table_Type,Metrics){
     
     #met<-Metrics[[1]]
-    gl<-glue("{dir}/{Database}/{Table_Type}/{Metrics[[1]]$Model}/")
+    gl<-glue("{dir}/{Database}/{Table_Type}/{Metrics$Model}/")
     return(as.character(gl))
     
   }))

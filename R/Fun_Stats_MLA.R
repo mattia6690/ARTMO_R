@@ -11,11 +11,14 @@
 .mlr.plotcv<-function(jtable){
   
   tabout<-jtable %>% 
-    mutate(plotcv=map(plotcv,function(x) {
+    dplyr::mutate(plotcv=map(plotcv,function(x) {
+      
+      if(is.null(x)) return(NULL)
       
       mat<-readMat(x)
-      mat.melt<- mat$data[,,1] %>% melt %>% select(ID=Var1,L1,value)
+      mat.melt<- mat$data[,,1] %>% melt %>% dplyr::select(ID=Var1,L1,value)
       mat.spread<- mat.melt %>% spread(L1,value)
+      return(mat.spread)
     }))
   
   return(tabout)
@@ -26,7 +29,13 @@
 .mlr.staticscv<-function(jtable){
   
   tabout<-jtable %>% 
-    mutate(staticscv=map(staticscv,function(x) {readMat(x) %>% .$data %>% as.numeric}))
+    dplyr::mutate(staticscv=map(staticscv,function(x) {
+      
+      if(is.null(x)) return(NULL)
+      mat<-readMat(x) %>% .$data %>% as.numeric
+      returna(mat)
+      }))
+  
   return(tabout)
   
 }
@@ -35,7 +44,7 @@
 .mlr.wl<-function(jtable){
   
   tabout<-jtable %>% 
-    mutate(wl=map(wl,function(x) as.numeric(rawTrans(x)$numbers))) %>% 
+    dplyr::mutate(wl=map(wl,function(x) as.numeric(rawTrans(x)$numbers))) %>% 
     rename(Model=test_name)
   return(tabout)
   
