@@ -33,7 +33,7 @@
       
       if(is.null(x)) return(NULL)
       mat<-readMat(x) %>% .$data %>% as.numeric
-      returna(mat)
+      return(mat)
       }))
   
   return(tabout)

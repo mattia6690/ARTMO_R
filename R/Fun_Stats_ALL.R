@@ -66,6 +66,8 @@ getTabs<-function(con,links){
       if(any(tabn=="wl"))     tab<-.mlr.wl(tab)
       if(any(tabn=="plotcv")) tab<-.mlr.plotcv(tab)
       if(any(tabn=="staticscv")) tab<-.mlr.staticscv(tab)
+      if(any(tabn=="name_parameter")) tab<- tab %>% rename(parameter=name_parameter)
+      if(any(tabn=="name_algoritmo")) tab<- tab %>% rename(algorithm=name_algoritmo)
       
       # Delete Columns
       if(any(tabn=="mla_settigs"))  tab<-tab %>% dplyr::select(-"mla_settigs")
