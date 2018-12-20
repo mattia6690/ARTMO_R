@@ -1,6 +1,7 @@
 #### Test script for Dessis DB
 
 # Environment -------------------------------
+source("R/Packages.R")
 source("R/Essentials.R")
 source("R/Fun_MySQL.R")
 source("R/Fun_Binary.R")
@@ -19,18 +20,29 @@ password <- "123456"
 con.raw <- connect.raw(user, password, host)
 is<-is.artmodb(con.raw, user, password, host)
 
-database<-is[2]
+database<-is[1]
 con <- connect.db(user, password, host, database)
 
 # Database ----------------------------------
 db.tabs<-get.tables.db(con)
 
 # Gather --------------------------------
-dblinks  <- getLinks(con) 
+dblinks  <- getLinks(con)
 dbtabs   <- getTabs(con,dblinks)
 dbjoin   <- doJoin(dbtabs,removeid = T)
 
+#saveRDS(dbjoin$Metrics[[1]],"docs/data/demo.rds")
+
 # Analysis --------------------------------
 #* Type --------------------------------------
-statistics<- dbjoin[1,] %>% unnest
+stat    <- dbjoin$Metrics[[1]]
+stat.td <- FormatTidy(stat,what="CF")
 
+#saveRDS(dbjoin$Metrics[[1]],"docs/data/demo.rds")
+
+
+# End ---------------------------------------
+
+#' For all other Visualizations etc. please consult the /docs section and run the code embedded
+#' in the Rmarkdown Files
+#' Enjoy!!
