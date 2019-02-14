@@ -1,12 +1,47 @@
 
-#' Functions for Extracting the COST Functions
-#' 
-#' The functions are divided by steps taken for accessing the Databases
-################################'
 
-# Main Functions ------------------------------------
+# General -----------------------------------
+# Correction of the IDs? Capital letters
+.idcorr<-function(tabs){
+  
+  t<-tabs %>% 
+    mutate(MyTables=map(MyTables,function(x){
+      cn<-colnames(x)
+      sw<-startsWith(cn,"id_")
+      cn[sw]<-toupper(cn[sw])
+      colnames(x)<-cn
+      return(x)
+    }))
+  return(t)
+}
 
-#' Checks which Tables are available in the MYSQL Database 
+# Function for removing all the IDS (Tidying up)
+.removeid<-function(table){
+  
+  cn<-colnames(table)
+  if(any(grepl("ID_",cn))) {
+    out<-select(table,-contains("ID_"))
+    return(out)
+  } else { return(table)}
+  
+}
+
+
+# Get Data ----------------------------------
+
+#' @title Return ARTMO Table Relationships
+#' @description This is the first function necessary for the combination of the MYSQL back.end data.
+#' It searches for the links between the single tables stored in MYSQL. 
+#' Thereby a tibble is generated containing the name of the databse, Table, its ID as well as the Type of the Table (MLRA, LUT etc.).
+#' The dataframe is added by an information of the rank (position in table sequence) as well as whether it is a metadata table or a results table.
+#' This dataframe is used for the `getTabs` function.
+#' @param con MariaDBConnection; connection to a ARTMO Database
+#' @import DBI
+#' @import dplyr
+#' @import purrr
+#' @import stringr
+#' @importFrom tibble as.tibble
+#' @export
 getLinks<-function(con) {
   
   # Which Columns represent the Results
@@ -46,10 +81,24 @@ getLinks<-function(con) {
   
 }
 
-# Read the COST Functions based on the Tables (Stat.all)
-getTabs<-function(con,links){
+#' @title Return ARTMO Tables
+#' @description This is the second function necessary for the extraction and transformation of the MYSQL back-end data.
+#' The function is necessary for reading the MYSQL Tables based on their link to each other.
+#' Aside the **con** parameter the function needs the linkage inormation provided by the `getLinks`.
+#' @param con MariaDBConnection; connection to a ARTMO Database
+#' @param links tibble; Link between the MySQL tables
+#' @import DBI
+#' @import dplyr
+#' @import purrr
+#' @import stringr
+#' @importFrom glue glue
+#' @importFrom tibble as.tibble
+#' @importFrom tidyr separate
+#' @export 
+getTabs <- function(con,links){
 
-  toload<-links %>% select(Database,Table_Type,Table_Name,Table,Rank,Count,result)
+  toload<-links %>% 
+    select(Database,Table_Type,Table_Name,Table,Rank,Count,result)
   
   stat.tabs<-toload %>% 
     dplyr::mutate(MyTables=pmap(.,function(...,Table_Type,Table,result){
@@ -66,12 +115,12 @@ getTabs<-function(con,links){
       if(any(tabn=="wl"))     tab<-.mlr.wl(tab)
       if(any(tabn=="plotcv")) tab<-.mlr.plotcv(tab)
       if(any(tabn=="staticscv")) tab<-.mlr.staticscv(tab)
-      if(any(tabn=="name_parameter")) tab<- tab %>% rename(parameter=name_parameter)
-      if(any(tabn=="name_algoritmo")) tab<- tab %>% rename(algorithm=name_algoritmo)
       
       # Delete Columns
       if(any(tabn=="mla_settigs"))  tab<-tab %>% dplyr::select(-"mla_settigs")
       if(any(tabn=="general_info")) tab<-tab %>% dplyr::select(-"general_info")
+      if(any(tabn=="name_parameter")) tab<- tab %>% rename(parameter=name_parameter)
+      if(any(tabn=="name_algoritmo")) tab<- tab %>% rename(algorithm=name_algoritmo)
     }
       
     #' Lookup Table Inversion
@@ -128,8 +177,19 @@ getTabs<-function(con,links){
   return(stat.tabs)
 }
 
-#' Function for Inerative Join (For Loop) of each Table within the same
-#' Table_Type (purrr:map)
+#' @title Join ARTMO Tables
+#' @description This is the third function necessary for the combination of the extracted Tables
+#' Here all the Tables generated beforehand are combined in the respective order with the others.
+#' The tables are saved as tibbles and differred by the Table Type (MLRA, LUT CF, VIs).
+#' Aside the **con** parameter the function needs the linkage inormation provided by the `getTabs`
+#' @param tabs nested tibble; table extraction done by `getTabs`
+#' @param removeid boolean; Shall the ID be removed?
+#' @import dplyr
+#' @import purrr
+#' @import stringr
+#' @importFrom tibble as.tibble
+#' @importFrom tidyr nest separate
+#' @export
 doJoin<-function(tabs,removeid=F){
   
   # Group and perform operation by Table Type (each class single)
@@ -181,65 +241,18 @@ doJoin<-function(tabs,removeid=F){
  
 }
 
-# COndense the Table to the most important Models, Parameters and Statistic
-stat.condense<-function(jtable,model=NULL,parameters=NULL,statistics=NULL,addGG=F){
+#' @title MYSQL Processor
+#' @description This function unites all steps individually done for accessing the MYSQL back-end.
+#' This allows the combined action of the three functions `getLinks`,`getTabs` and `doJoin`
+#' @param con MariaDBConnection; connection to a ARTMO Database
+#' @param removeid boolean; Shall the ID be removed?
+#' @export
+getMYSQL<-function(con,removeid=F){
   
-  gg1<-jtable %>% 
-    select(Model,
-           Store.ID,
-           eval(statistics),
-           eval(parameters),
-           Results)
-  
-  if(!is.null(model)) gg1<-gg1 %>% filter(Model==model)
-  if(nrow(gg1)==0) stop("Check your Inputs!")
-  
-  if(addGG==T){
-    
-    gg1<-gg1 %>% 
-      mutate(ResultGG=pmap(.,function(...,Results){
-        
-        g1<-ggplot(Results,aes(Measured,Estimated))+
-          geom_point()+
-          geom_smooth(method="lm")+
-          ggtitle(glue("Measured vs. Estimated Samples"))+
-          xlim(0,10)+ylim(0,10)+
-          geom_abline(intercept=0,slope=1,col="firebrick4",linetype=2)
-        return(g1)
-        
-      }))
-  }
-  return(gg1)
-}
-
-
-# Side Functions ----------------------------
-
-# Function for removing all the IDS (Tidying up)
-.removeid<-function(table){
-  
-  cn<-colnames(table)
-  if(any(grepl("ID_",cn))) {
-    out<-select(table,-contains("ID_"))
-    return(out)
-  } else { return(table)}
-  
-}
-
-# Correct the IDs from small to big. Necessary for the join
-.idcorr<-function(tabs){
-  
-  t<-tabs %>% mutate(MyTables=map(MyTables,function(x){
-    
-    cn<-colnames(x)
-    sw<-startsWith(cn,"id_")
-    cn[sw]<-toupper(cn[sw])
-    colnames(x)<-cn
-    return(x)
-    
-  }))
-  
-  return(t)
+  gl<-getLinks(con)
+  gt<-getTabs(con,gl)
+  dj<-doJoin(gt,removeid)
+  return(dj)
   
 }
 

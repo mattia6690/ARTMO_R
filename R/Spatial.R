@@ -1,17 +1,16 @@
 
-
-#' Functions for Combining ARTMo and Spatial Information
-#' 
-#' The functions are divided by steps taken for accessing the Databases
-
-
-
-# Function for Melting the Dataframe based on needed Models, Parameters, Statistics etc.
-# Possibility to add GGplot representation
-
-
-
-SpatDir<-function(table,dir="",addraster=F){
+#' @title Link the Spatial Directories to the Databases
+#' @description one
+#' @param table Tibble; Tibble retrieved with the MYSQL extraction `getMYSQL`
+#' @param dir character; Directory od the Datastructure built by `buildpath`
+#' @param addraster boolean; Have the Rasters already been added and do you want to include them in the list?
+#' @import purrr
+#' @import dplyr
+#' @import stringr
+#' @importFrom glue glue
+#' @importFrom magrittr "%>%"
+#' @export
+spatDir<-function(table,dir="",addraster=F){
   
   out<-table %>% 
     mutate(SpatDir=pmap_chr(.,function(...,Model,Database,Table_Type,Store.ID){
@@ -42,11 +41,21 @@ SpatDir<-function(table,dir="",addraster=F){
       mutate(Rasters=map(RasDir,brick))
     
   }
-  
   return(out)
 }
 
-add.spatialresults<-function(spatial.df,measuredCol=""){
+#' @title Add the Spaial Results to the Dataframe
+#' @description two
+#' @param table Tibble; Tibble retrieved with the MYSQL extraction `getMYSQL`
+#' @param dir character; Directory od the Datastructure built by `buildpath`
+#' @param addraster boolean; Have the Rasters already been added and do you want to include them in the list?
+#' @importFrom magrittr "%>%"
+#' @import purrr
+#' @importFrom raster extract
+#' @importFrom tibble as.tibble
+#' @importFrom stats lm
+#' @export
+spatRes<-function(spatial.df,measuredCol=""){
   
   data1<-spatial.df %>% 
     mutate(Spat.Result=map2(Rasters,Features,function(x,y){

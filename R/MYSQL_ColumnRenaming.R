@@ -1,6 +1,12 @@
+#' Functions for renaming the columns in the Scripts from Juan Pablo
+#' 
+#' Convert any Matlab matrix to the right tibble format in R
+#' Formats everything in tidy format
 
 # General -----------------------------------
-# Create the Real names and Type of Table. Somehow the Fist CF Table has an INV in between
+
+# Create the Real names and Type of Table. 
+# Somehow the Fist CF Table has an INV in between
 cost.tableclass<-function(x){
   
   y1<-str_replace(x,"_inv","")
@@ -9,8 +15,89 @@ cost.tableclass<-function(x){
   return(y3)
 }
 
-# Core --------
-# Change of the Param_user Matlab Tab
+# VIs ---------------------------------------
+
+.vi.general<-function(tab){
+  
+  tab2<-tab %>% 
+    dplyr::mutate(general_info=map(general_info,function(x){
+      
+      gt<-readMat(x)
+      gt<-gt$data[,,1]$user[,,1] %>% 
+        melt %>% 
+        dplyr::select(Information=L1,Value=value) %>% 
+        filter(Information != "path") %>% 
+        as.tibble
+      
+    })) %>% rename(Model=test_name)
+  
+  return(tab2)
+}
+
+# Extract the metadata for sensor
+.vi.class<-function(tab){
+  
+  tab2<-tab %>% 
+    dplyr::mutate(data=map(data,function(x){
+      
+      gt    <- readMat(x)
+      specs <-gt$data[[2]][[1]][,,1]$spectral
+      wl    <- gt$data[[2]][[1]][,,1]$wl
+      salidas   <- gt$data[[2]][[1]][,,1]$vsalidas
+      salidas2  <- salidas[,,1] %>% 
+        melt %>% 
+        spread(L1,value) %>% 
+        dplyr::select(-c(Var1,Var2)) %>% 
+        t %>% 
+        as.data.frame() %>% 
+        rownames_to_column()
+      
+      b1<-cbind(wl,specs) %>% 
+        as.tibble
+      
+      colnames(salidas2)<-colnames(b1)
+      b2<-rbind(salidas2,b1)
+      
+    }))
+  
+  return(tab2)
+}
+
+# Extract the Sensor band information
+.vi.bandas<-function(tab){
+  
+  tab2<-tab %>% 
+    dplyr::mutate(Bands=map(bandas,function(x){
+      
+      gt<-rawTrans(x)$numbers %>% 
+        unlist(use.names = F) 
+      
+    }))
+  
+  tab2<-tab2 %>% select(-bandas)
+  
+  return(tab2) 
+  
+}
+
+# Get the Indices table
+.vi.indices<-function(tab){
+  
+  tab2<-tab %>% 
+    dplyr::mutate(indices=map(indices,function(x){
+      
+      gt <- readMat(x)
+      gt <- gt$data[[2]][[1]] %>% 
+        as.tibble
+      
+    }))
+  
+  return(tab2)
+}
+
+
+# CF ----------------------------------------
+
 .cf.generalinfo<-function(table){
   
   mapper<-map(table$general_info,function(x){
@@ -138,3 +225,49 @@ cost.tableclass<-function(x){
   return(out)
 }
 
+
+
+# MLRA --------------------------------------
+
+# PlotCV Column
+.mlr.plotcv<-function(jtable){
+  
+  tabout<-jtable %>% 
+    dplyr::mutate(plotcv=map(plotcv,function(x) {
+      
+      if(is.null(x)) return(NULL)
+      
+      mat<-readMat(x)
+      mat.melt<- mat$data[,,1] %>% melt %>% dplyr::select(ID=Var1,L1,value)
+      mat.spread<- mat.melt %>% spread(L1,value)
+      return(mat.spread)
+    }))
+  
+  return(tabout)
+  
+}
+
+# Statisticscv Column
+.mlr.staticscv<-function(jtable){
+  
+  tabout<-jtable %>% 
+    dplyr::mutate(staticscv=map(staticscv,function(x) {
+      
+      if(is.null(x)) return(NULL)
+      mat<-readMat(x) %>% .$data %>% as.numeric
+      return(mat)
+    }))
+  
+  return(tabout)
+  
+}
+
+# WL TColumn
+.mlr.wl<-function(jtable){
+  
+  tabout<-jtable %>% 
+    dplyr::mutate(wl=map(wl,function(x) as.numeric(rawTrans(x)$numbers))) %>% 
+    rename(Model=test_name)
+  return(tabout)
+  
+}
