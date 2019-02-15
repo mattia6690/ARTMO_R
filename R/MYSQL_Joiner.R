@@ -94,7 +94,10 @@ getLinks<-function(con) {
 #' @importFrom glue glue
 #' @importFrom tibble as.tibble
 #' @importFrom tidyr separate
-#' @export 
+#' @importFrom R.matlab readMat
+#' @importFrom reshape2 melt
+#' @importFrom tidyr spread unnest nest
+#' @export
 getTabs <- function(con,links){
 
   toload<-links %>% 
@@ -103,7 +106,7 @@ getTabs <- function(con,links){
   stat.tabs<-toload %>% 
     dplyr::mutate(MyTables=pmap(.,function(...,Table_Type,Table,result){
     
-    #' Machine Learning
+    # Machine Learning
     if(Table_Type=="test_mla"){
       
       # Read Table
@@ -123,7 +126,7 @@ getTabs <- function(con,links){
       if(any(tabn=="name_algoritmo")) tab<- tab %>% rename(algorithm=name_algoritmo)
     }
       
-    #' Lookup Table Inversion
+    # Lookup Table Inversion
     if(Table_Type=="test_cf"){
       
       # Read Table
@@ -146,7 +149,7 @@ getTabs <- function(con,links){
         
     }
     
-    #' Indices (In the Pipeline, too big to join for now -> Reduce dimensionality?)
+    # Indices (In the Pipeline, too big to join for now -> Reduce dimensionality?)
     if(Table_Type=="vis_test") {
       
       if(result==1){
@@ -175,6 +178,7 @@ getTabs <- function(con,links){
   stat.tabs<-stat.tabs[!nulls,]
   stat.tabs<-.idcorr(stat.tabs)
   return(stat.tabs)
+  
 }
 
 #' @title Join ARTMO Tables

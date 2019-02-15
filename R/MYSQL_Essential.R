@@ -12,17 +12,17 @@
 #' @param database character; Name of the Database you would like to use. If left empty all the databases are returned.
 #' @import RMariaDB
 #' @export
-connect.artmo <- function(user,password,host,database=NULL,getDBs=F){
+connect.artmo <- function(user,password,host,database=NULL,getDB=F){
   
   if(is.null(database)) {
     
     con<-dbConnect(MariaDB(), user=user, password= password, host=host)
-    if(isTRUE(getDBs)) con<- unlist(dbGetQuery(con,"show databases"))
+    if(isTRUE(getDB)) con<- unlist(dbGetQuery(con,"show databases"))
     
   }else{
     
     con<-dbConnect(MariaDB(), user=user, password= password, dbname=database, host=host)
-    if(isTRUE(getDBs)) warning("You cannot return a list of Databases when a databases is already specified")
+    if(isTRUE(getDB)) warning("You cannot return a list of Databases when a databases is already specified")
     
   }
   

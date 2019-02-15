@@ -41,7 +41,7 @@ cost.tableclass<-function(x){
     dplyr::mutate(data=map(data,function(x){
       
       gt    <- readMat(x)
-      specs <-gt$data[[2]][[1]][,,1]$spectral
+      specs <- gt$data[[2]][[1]][,,1]$spectral
       wl    <- gt$data[[2]][[1]][,,1]$wl
       salidas   <- gt$data[[2]][[1]][,,1]$vsalidas
       salidas2  <- salidas[,,1] %>% 
