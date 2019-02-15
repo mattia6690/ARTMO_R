@@ -9,6 +9,7 @@
 #' @import stringr
 #' @importFrom glue glue
 #' @importFrom magrittr "%>%"
+#' @importFrom raster brick
 #' @export
 spatDir<-function(table,dir="",addraster=F){
   

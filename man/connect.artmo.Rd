@@ -4,7 +4,7 @@
 \alias{connect.artmo}
 \title{Connect to ARTMO}
 \usage{
-connect.artmo(user, password, host, database = NULL, getDBs = F)
+connect.artmo(user, password, host, database = NULL, getDB = F)
 }
 \arguments{
 \item{user}{character; MYSQL Username (default = root)}
