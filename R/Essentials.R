@@ -59,8 +59,7 @@ formatTidy<-function(jtable){
   
 }
 
-
-#' @title Condense ARTMO DatasetDataset
+#' @title Condense ARTMO Dataset
 #' @description This function helps the user to format the Results table based. 
 #' This functions allows to reduce the information of a table on the level of statistical accuracy
 #' @param jtable Tibble; Tibble containing the joined ARTMO Database
@@ -72,7 +71,7 @@ formatTidy<-function(jtable){
 #' @importFrom dplyr filter select
 #' @importFrom tidyr gather
 #' @export
-format.tab<-function(jtable,standard=T,model=NULL,parameters=NULL,statistics=NULL){
+formatARTMO<-function(jtable,standard=T,model=NULL,parameters=NULL,statistics=NULL){
   
   if(standard==T){
     
