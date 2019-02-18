@@ -39,6 +39,7 @@ connect.artmo <- function(user,password,host,database=NULL,getDB=F){
 #' @param con MariaDBConnection; connection to a ARTMO Database
 #' @import dplyr
 #' @import RMariaDB
+#' @importFrom magrittr "%>%"
 #' @export
 db.tables<-function(con){
   
@@ -60,6 +61,7 @@ db.tables<-function(con){
 #' @import dplyr
 #' @import RMariaDB
 #' @importFrom tibble as.tibble
+#' @importFrom magrittr "%>%"
 #' @export
 db.master<- function(con){
   
@@ -78,6 +80,7 @@ db.master<- function(con){
 #' @import stringr
 #' @import RMariaDB
 #' @importFrom stats setNames
+#' @importFrom magrittr "%>%"
 #' @importFrom tibble as.tibble
 #' @export
 db.sensor<-function(x){
@@ -107,6 +110,3 @@ db.sensor<-function(x){
   
   return(wavel)
 }
-
-
-

@@ -8,6 +8,7 @@
 #' @param foldersetup boolean; Do you want to automatically create a folder structure based on the specified directory?
 #' @import purrr
 #' @import dplyr
+#' @importFrom magrittr "%>%"
 #' @importFrom glue glue
 #' @importFrom tidyr nest
 #' @export
@@ -44,6 +45,7 @@ buildpath<-function(dbjoin,dir="",foldersetup=F){
 #' @description This function helps the user to format the Results table based. 
 #' This functions allows to reduce the information of a table on the level of statistical accuracy
 #' @param jtable Tibble; Tibble containing the joined ARTMO Database
+#' @importFrom magrittr "%>%"
 #' @importFrom dplyr filter
 #' @importFrom tidyr gather
 #' @export
@@ -55,6 +57,44 @@ formatTidy<-function(jtable){
   
   return(tab)
   
+}
+
+
+#' @title Condense ARTMO DatasetDataset
+#' @description This function helps the user to format the Results table based. 
+#' This functions allows to reduce the information of a table on the level of statistical accuracy
+#' @param jtable Tibble; Tibble containing the joined ARTMO Database
+#' @param model character; Reduction by Model (Optional)
+#' @param standard boolean; Standard way of standardization (model, parameter and statistics are ignored)
+#' @param parameters character;  Reduction by Parameter(s) (Optional)
+#' @param statistics character;  Reduction by certain statistics (Optional)
+#' @importFrom magrittr "%>%"
+#' @importFrom dplyr filter select
+#' @importFrom tidyr gather
+#' @export
+format.tab<-function(jtable,standard=T,model=NULL,parameters=NULL,statistics=NULL){
+  
+  if(standard==T){
+    
+    tab<-jtable %>% 
+      filter(!is.na(R2)) %>% 
+      gather(.,key=Statistic,value=Value,ME,RMSE,RELRMSE,MAE,R,R2,NRMSE,NSE)
+    
+  } else {
+    
+    tab<-jtable %>% 
+      select(Model,
+             Store.ID,
+             eval(statistics),
+             eval(parameters),
+             Results)
+    
+    if(!is.null(model)) tab<-tab %>% filter(Model==model)
+    if(nrow(tab)==0) stop("Check your Inputs!")
+    
+  }
+ 
+  return(tab)
 }
 
 #' @title ARTMO Blob Converter

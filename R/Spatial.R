@@ -10,6 +10,7 @@
 #' @importFrom glue glue
 #' @importFrom magrittr "%>%"
 #' @importFrom raster brick
+#' @importFrom tidyr nest unnest
 #' @export
 spatDir<-function(table,dir="",addraster=F){
   
@@ -50,11 +51,12 @@ spatDir<-function(table,dir="",addraster=F){
 #' @param table Tibble; Tibble retrieved with the MYSQL extraction `getMYSQL`
 #' @param dir character; Directory od the Datastructure built by `buildpath`
 #' @param addraster boolean; Have the Rasters already been added and do you want to include them in the list?
-#' @importFrom magrittr "%>%"
 #' @import purrr
+#' @importFrom magrittr "%>%"
 #' @importFrom raster extract
 #' @importFrom tibble as.tibble
 #' @importFrom stats lm
+#' @importFrom sf as_Spatial
 #' @export
 spatRes<-function(spatial.df,measuredCol=""){
   

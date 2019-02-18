@@ -40,6 +40,7 @@
 #' @import dplyr
 #' @import purrr
 #' @import stringr
+#' @importFrom magrittr "%>%"
 #' @importFrom tibble as.tibble
 #' @export
 getLinks<-function(con) {
@@ -92,6 +93,7 @@ getLinks<-function(con) {
 #' @import purrr
 #' @import stringr
 #' @importFrom glue glue
+#' @importFrom magrittr "%>%"
 #' @importFrom tibble as.tibble
 #' @importFrom tidyr separate
 #' @importFrom R.matlab readMat
@@ -192,6 +194,7 @@ getTabs <- function(con,links){
 #' @import purrr
 #' @import stringr
 #' @importFrom tibble as.tibble
+#' @importFrom magrittr "%>%"
 #' @importFrom tidyr nest separate
 #' @export
 doJoin<-function(tabs,removeid=F){
