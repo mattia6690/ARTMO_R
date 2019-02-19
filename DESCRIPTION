@@ -27,4 +27,6 @@ Imports:
   reshape2,
   magrittr,
   tibble,
-  DBI
+  DBI,
+  devtools
+URL: https://mattia6690.github.io/ARTMO_R/
