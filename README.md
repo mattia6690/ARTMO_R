@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/mattia6690/ARTMO_R.svg?branch=dev)](https://travis-ci.org/mattia6690/ARTMO_R) 
 [![Coverage Status](https://img.shields.io/codecov/c/github/mattia6690/ARTMO_R/master.svg)](https://codecov.io/github/mattia6690/ARTMO_R?branch=dev)
 [![CRAN](http://www.r-pkg.org/badges/version/ARTMOR)](https://cran.r-project.org/package=ARTMOR)
-[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-experimental-blue.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
 ## Link the ARTMO Software to R!
 
