@@ -18,6 +18,10 @@ before install:
 r_github_packages:
 - r-lib/covr
 
+script:
+ - R CMD build .
+ - R CMD check *tar.gz
+
 install:
   - R -e 'devtools::install_deps(dep = T)'
 
