@@ -1,6 +1,16 @@
 language: R
-cache: packages
-sudo: false
 
 r:
  - release
+ - devel
+
+sudo: required
+
+before install:
+ - sudo apt-get install libudunits2-dev
+ 
+r_packages:
+ - covr
+
+after_success:
+ - Rscript -e 'library(covr); codecov()'
