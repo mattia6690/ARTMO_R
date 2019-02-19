@@ -13,6 +13,7 @@ The functions aim at standardizing the workflow around Radiative Transfer Opeara
 #### Installation
 
 ```s
+library("devtools")
 devtools::install_github("mattia6690/ARTMO_R")
 ```
 

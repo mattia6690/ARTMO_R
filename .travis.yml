@@ -1,5 +1,5 @@
 language: R
-
+dist: trusty
 cache: packages
 
 r:
@@ -8,23 +8,20 @@ r:
 
 sudo: required
 
+apt_packages:
+  - libgdal-dev
+  - libproj-dev
+  - libudunits2-dev
+
+
 before install:
- - sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
- - sudo apt-get update -qq
- - sudo aptitude install -y gdal-bin
- - sudo aptitude install -y libgdal1-dev
- - sudo aptitude install -y libproj-dev
- - sudo apt-get install libudunits2-dev
- - sudo apt-get install libssh2-1-dev
- - sudo apt-get install netcdf-bin
+  - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes
+  - sudo add-apt-repository -y ppa:opencpu/jq --yes
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libgdal-dev libproj-dev libv8-dev libprotobuf-dev libudunits2-dev netcdf-bin libv8-dev libjq-dev
 
 r_github_packages:
  - r-lib/covr
-
-script:
- - R CMD build .
- - R CMD check *tar.gz
-
 
 after_success:
  - Rscript -e 'library(covr); codecov()'
