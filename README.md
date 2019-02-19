@@ -1,4 +1,4 @@
-# ARTMO_R <a href="https://mattia6690.github.io/ARTMO_R/"><img align="right" src="docs/data/ARTMOR_logoR.png" width="300" height="100" /></a>
+# ARTMO_R <a href="https://mattia6690.github.io/ARTMO_R/"><img align="right" src="docs/data/ARTMOR_logoR.png" width="300" height="120" /></a>
 
 [![Build Status](https://travis-ci.org/mattia6690/ARTMO_R.svg?branch=dev)](https://travis-ci.org/mattia6690/ARTMO_R?branch=dev) 
 [![Coverage Status](https://img.shields.io/codecov/c/github/mattia6690/ARTMO_R/master.svg)](https://codecov.io/github/mattia6690/ARTMO_R?branch=dev)
