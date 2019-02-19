@@ -1,5 +1,4 @@
 
-
 #' @title Recursively generate Directories
 #' @description After the access, cleaning and join of tables they can be exported from R. 
 #' The *buildpath* function is useful to create the necessary folder infrastructure on the file system based on a specified directory
@@ -41,30 +40,13 @@ buildpath<-function(dbjoin,dir="",foldersetup=F){
   
 }
 
-#' @title Create Tidy Data Arrays from Results
-#' @description This function helps the user to format the Results table based. 
-#' This functions allows to reduce the information of a table on the level of statistical accuracy
-#' @param jtable Tibble; Tibble containing the joined ARTMO Database
-#' @importFrom magrittr "%>%"
-#' @importFrom dplyr filter
-#' @importFrom tidyr gather
-#' @export
-formatTidy<-function(jtable){
-  
-  tab<-jtable %>% 
-    filter(!is.na(R2)) %>% 
-    gather(.,key=Statistic,value=Value,ME,RMSE,RELRMSE,MAE,R,R2,NRMSE,NSE)
-  
-  return(tab)
-  
-}
 
 #' @title Condense ARTMO Dataset
 #' @description This function helps the user to format the Results table based. 
 #' This functions allows to reduce the information of a table on the level of statistical accuracy
 #' @param jtable Tibble; Tibble containing the joined ARTMO Database
-#' @param model character; Reduction by Model (Optional)
 #' @param standard boolean; Standard way of standardization (model, parameter and statistics are ignored)
+#' @param model character; Reduction by Model (Optional)
 #' @param parameters character;  Reduction by Parameter(s) (Optional)
 #' @param statistics character;  Reduction by certain statistics (Optional)
 #' @importFrom magrittr "%>%"
@@ -125,8 +107,6 @@ rawTrans<-function(input){
   tst$numbers   <- numbers
   return(tst)
 }
-
-
 
 # Transforms an lm function output to text usable for ggplots
 # Thanks to Jodie Burchell (http://t-redactyl.io/)

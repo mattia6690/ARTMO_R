@@ -1,6 +1,4 @@
 
-
-
 # Connect -----------------------------------
 
 #' @title Connect to ARTMO
