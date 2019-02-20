@@ -1,8 +1,3 @@
-#' Functions for renaming the columns in the Scripts from Juan Pablo
-#' 
-#' Convert any Matlab matrix to the right tibble format in R
-#' Formats everything in tidy format
-
 # General -----------------------------------
 
 # Create the Real names and Type of Table. 
@@ -94,7 +89,6 @@ cost.tableclass<-function(x){
   
   return(tab2)
 }
-
 
 # CF ----------------------------------------
 
@@ -224,8 +218,6 @@ cost.tableclass<-function(x){
     dplyr::select(-resultados)
   return(out)
 }
-
-
 
 # MLRA --------------------------------------
 

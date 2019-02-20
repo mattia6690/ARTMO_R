@@ -4,7 +4,7 @@
 \alias{db.sensor}
 \title{Get the ARTMO Sensor Information}
 \usage{
-db.sensor(x)
+db.sensor(con)
 }
 \arguments{
 \item{con}{MariaDBConnection; connection to a ARTMO Database}

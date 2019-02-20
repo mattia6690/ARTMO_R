@@ -4,15 +4,13 @@
 \alias{spatRes}
 \title{Add the Spaial Results to the Dataframe}
 \usage{
-spatRes(spatial.df, measuredCol = "")
+spatRes(spatial.df, col = "")
 }
 \arguments{
-\item{table}{Tibble; Tibble retrieved with the MYSQL extraction `getMYSQL`}
+\item{spatial.df}{tibble; The spatial results will be appended to this tibble or data frame}
 
-\item{dir}{character; Directory od the Datastructure built by `buildpath`}
-
-\item{addraster}{boolean; Have the Rasters already been added and do you want to include them in the list?}
+\item{col}{character; Column indluding the measurements}
 }
 \description{
-two
+This functions adds the Rasterfiles to the data frame corresponding to the Spatial
 }

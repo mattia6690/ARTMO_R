@@ -8,7 +8,9 @@
 #' @param password character; MYSQL password (default = 123456)
 #' @param host character; Host of the MySQL Server (default = localhost)
 #' @param database character; Name of the Database you would like to use. If left empty all the databases are returned.
-#' @import RMariaDB
+#' @param getDB boolean; Would you like to return the Databases available? 
+#' This option is only available if the database is not specified before
+#' @importFrom DBI dbConnect dbGetQuery
 #' @export
 connect.artmo <- function(user,password,host,database=NULL,getDB=F){
   
@@ -81,8 +83,10 @@ db.master<- function(con){
 #' @importFrom magrittr "%>%"
 #' @importFrom tibble as.tibble
 #' @export
-db.sensor<-function(x){
+db.sensor<-function(con){
 
+  x<-db.master(con)
+  
   if(is.na(x$TIME_MODEL)){
     
     wavel.raw  <- x$BANDAS %>% 

@@ -7,7 +7,7 @@
 
 ## Link the ARTMO Software to R!
 
-This repository contains an **R-Package** for utilizing the **Automated Radiative Transfer Models Operator**, [Artmo](http://ipl.uv.es/artmo/). The functions as well as the package are being actively developed and futher expanded. All the functionalities can be considered to be in an **early beta stage**.  
+This repository contains an **R-Package** for utilizing the [Automated Radiative Transfer Models Operator](http://ipl.uv.es/artmo/), **ARTMO**. The functions as well as the package are being actively developed and futher expanded. All the functionalities can be considered to be in an **early beta stage**.  
 The functions aim at standardizing the workflow around Radiative Transfer Opearations in order to facilitate the organization of In- and Outputs given by the software. It does NOT replace central ARTMO functions or to "translate" the functions originally used in Matlab. Is is solemly interacting the the MySQL backend of ARTMO and translates most of its storages in a "tidy"- [Tidyverse](https://www.tidyverse.org/) - data structure ready for futher analysis.  
 
 #### Installation
@@ -19,13 +19,9 @@ devtools::install_github("mattia6690/ARTMO_R")
 
 #### Work In Progress
 
-* Preprocessing functions
-* Evaluation of Projecs and Model performances
-* Parameter Testing 
-* Integrate functions for spatial analysis
-* Build a Shiny Web Application
+* Transferrably of the Functions from 
 
-If you want to know more about core functionalities of the package please visit the [Homepage of the project](https://mattia6690.github.io/ARTMO_R/) orclick on the Artmo Logo above
+If you want to know more about core functionalities of the package please visit the [Homepage of the project](https://mattia6690.github.io/ARTMO_R/) or simply click on the Artmo_R logo above.
 
 #### Contact
 

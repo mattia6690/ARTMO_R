@@ -1,2 +1,6 @@
+^data$
+^docs$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.travis\.yml$
+^\.gitignore$

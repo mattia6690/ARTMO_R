@@ -3,7 +3,7 @@
 #' @description After the access, cleaning and join of tables they can be exported from R. 
 #' The *buildpath* function is useful to create the necessary folder infrastructure on the file system based on a specified directory
 #' @param dbjoin Tibble; Tibble containing the joined ARTMO Database
-#' @param mydir character; Location of a Directory
+#' @param dir character; Location of a Directory
 #' @param foldersetup boolean; Do you want to automatically create a folder structure based on the specified directory?
 #' @import purrr
 #' @import dplyr
@@ -108,13 +108,5 @@ rawTrans<-function(input){
   return(tst)
 }
 
-# Transforms an lm function output to text usable for ggplots
-# Thanks to Jodie Burchell (http://t-redactyl.io/)
-r2.equation = function(x) {
-  lm_coef <- list(a = round(as.numeric(coef(x)[1]), digits = 2),
-                  b = round(as.numeric(coef(x)[2]), digits = 2),
-                  r2 = round(summary(x)$r.squared, digits = 2));
-  lm_eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(R)^2~"="~r2,lm_coef)
-  as.character(as.expression(lm_eq))
-}
+
 

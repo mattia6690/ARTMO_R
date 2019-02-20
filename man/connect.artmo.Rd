@@ -14,6 +14,9 @@ connect.artmo(user, password, host, database = NULL, getDB = F)
 \item{host}{character; Host of the MySQL Server (default = localhost)}
 
 \item{database}{character; Name of the Database you would like to use. If left empty all the databases are returned.}
+
+\item{getDB}{boolean; Would you like to return the Databases available? 
+This option is only available if the database is not specified before}
 }
 \description{
 This function provides the core connection to the MySQL backend. 

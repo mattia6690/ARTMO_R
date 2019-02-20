@@ -9,9 +9,9 @@ buildpath(dbjoin, dir = "", foldersetup = F)
 \arguments{
 \item{dbjoin}{Tibble; Tibble containing the joined ARTMO Database}
 
-\item{foldersetup}{boolean; Do you want to automatically create a folder structure based on the specified directory?}
+\item{dir}{character; Location of a Directory}
 
-\item{mydir}{character; Location of a Directory}
+\item{foldersetup}{boolean; Do you want to automatically create a folder structure based on the specified directory?}
 }
 \description{
 After the access, cleaning and join of tables they can be exported from R. 

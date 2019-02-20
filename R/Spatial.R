@@ -47,10 +47,9 @@ spatDir<-function(table,dir="",addraster=F){
 }
 
 #' @title Add the Spaial Results to the Dataframe
-#' @description two
-#' @param table Tibble; Tibble retrieved with the MYSQL extraction `getMYSQL`
-#' @param dir character; Directory od the Datastructure built by `buildpath`
-#' @param addraster boolean; Have the Rasters already been added and do you want to include them in the list?
+#' @description This functions adds the Rasterfiles to the data frame corresponding to the Spatial 
+#' @param spatial.df tibble; The spatial results will be appended to this tibble or data frame 
+#' @param col character; Column indluding the measurements
 #' @import purrr
 #' @importFrom magrittr "%>%"
 #' @importFrom raster extract
@@ -58,7 +57,7 @@ spatDir<-function(table,dir="",addraster=F){
 #' @importFrom stats lm
 #' @importFrom sf as_Spatial
 #' @export
-spatRes<-function(spatial.df,measuredCol=""){
+spatRes<-function(spatial.df,col=""){
   
   data1<-spatial.df %>% 
     mutate(Spat.Result=map2(Rasters,Features,function(x,y){
