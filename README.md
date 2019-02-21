@@ -1,4 +1,4 @@
-# ARTMO_R <a href="https://mattia6690.github.io/ARTMO_R/"><img align="right" src="docs/data/ARTMOR_logoR.png" width="300" height="120" /></a>
+# ARTMO_R <img align="right" src="data/ARMOR_simple.png" width="400" height="130" /></a>
 
 [![Build Status](https://travis-ci.org/mattia6690/ARTMO_R.svg?branch=dev)](https://travis-ci.org/mattia6690/ARTMO_R) 
 [![Coverage Status](https://img.shields.io/codecov/c/github/mattia6690/ARTMO_R/dev.svg)](https://codecov.io/github/mattia6690/ARTMO_R)
@@ -24,7 +24,7 @@ devtools::install_github("mattia6690/ARTMO_R")
 * Extraction of multiple Parameters
 * Adaptation to further ARTMO releases
 
-If you want to know more about core functionalities of the package please visit the [Homepage of the project](https://mattia6690.github.io/ARTMO_R/) or simply click on the Artmo_R logo above.
+If you want to know more about core functionalities of the package please visit the [Homepage of the project](https://mattia6690.github.io/ARTMO_R/)
 
 #### Contact
 
