@@ -1,0 +1,37 @@
+development:
+  mode: unreleased
+
+
+home:
+  links:
+  - text: Browse source code
+    href: http://github.com/mattia6690/ARTMO_R
+
+navbar:
+  title: "ArtmoR"
+  type: inverse
+  left:
+    - icon: fa-home fa-lg
+      href: index.html
+    - text: "Motivation"
+      href: articles/motivation.html
+    - text: "Tutorial"
+      menu:
+      - text: "Before Starting"
+        href: articles/example0.html
+      - text: "Connect and Get"
+        href: articles/example1.html
+      - text: "Explore"
+        href: articles/example2.html
+      - text: "Spatial"
+        href: articles/example3.html
+    - text: "Functions"
+      href: reference/index.html
+    - text: "Changelog"
+      href: articles/changelog.html
+  
+  right:
+    - icon: fa-twitter fa-lg
+      href: http://www.twitter.com/mattia6690
+    - icon: fa-github fa-lg
+      href: http://www.github.com/mattia6690
