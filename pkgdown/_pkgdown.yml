@@ -1,11 +1,14 @@
 development:
   mode: unreleased
 
-
 home:
   links:
-  - text: Browse source code
+  - text: Learn about ARTMO...
+    href: http://ipl.uv.es/artmo/
+  - text: Browse source code...
     href: http://github.com/mattia6690/ARTMO_R
+  - text: Comments and Issues are welcomed here...
+    href: https://github.com/mattia6690/ARTMO_R/issues
 
 navbar:
   title: "ArtmoR"
