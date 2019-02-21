@@ -1,4 +1,4 @@
-# ARTMO_R <img align="right" src="data/ARMOR_simple.png" width="400" height="130" /></a>
+# ARTMO_R <img align="right" src="data/ARMOR_simple.png" width="400" height="150" /></a>
 
 [![Build Status](https://travis-ci.org/mattia6690/ARTMO_R.svg?branch=dev)](https://travis-ci.org/mattia6690/ARTMO_R) 
 [![Coverage Status](https://img.shields.io/codecov/c/github/mattia6690/ARTMO_R/dev.svg)](https://codecov.io/github/mattia6690/ARTMO_R)
