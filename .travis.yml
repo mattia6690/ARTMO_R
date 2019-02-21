@@ -13,7 +13,6 @@ apt_packages:
   - libproj-dev
   - libudunits2-dev
 
-
 before install:
   - sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable --yes
   - sudo add-apt-repository -y ppa:opencpu/jq --yes
