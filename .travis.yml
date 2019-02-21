@@ -5,6 +5,8 @@ cache: packages
 r:
  - release
  - devel
+ 
+os: osx
 
 sudo: required
 
