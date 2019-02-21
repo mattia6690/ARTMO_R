@@ -29,3 +29,7 @@ If you want to know more about core functionalities of the package please visit 
 #### Contact
 
 If you are interested in using contributing or testing the package in order to make it more stable don't hesitate to contact me or to create an issue in the Repository.
+
+#### Special Thanks
+
+A special thanks goes out to the ARTMO development team at the [Laboratory for Earth Observation (LEO) of the University of Valencia](http://ipl.uv.es/leo/) and especially to [Jochem Verrelst](https://www.researchgate.net/profile/Jochem_Verrelst) and [Pablo Morcillo Pallarés](https://www.linkedin.com/in/pablo-antonio-morcillo-pallar%C3%A9s-1823a9114/)
