@@ -63,7 +63,7 @@ spatRes<-function(spatial.df,col=""){
     mutate(Spat.Result=map2(Rasters,Features,function(x,y){
       
       Simulated <-raster::extract(x[[1]],as_Spatial(y))
-      Measured  <-y %>% as.data.frame %>% select(measuredCol)
+      Measured  <-y %>% as.data.frame %>% select(col)
       
       results   <- cbind(Measured,Simulated) %>% 
         setNames(c("Measured","Simulated")) %>% 
